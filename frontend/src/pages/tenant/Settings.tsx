@@ -42,7 +42,7 @@ export default function Settings() {
   const [pastor, setPastor] = useState({ pastorName: '', pastorSignature: '' });
   const [sigPreview, setSigPreview] = useState<string | null>(null);
   const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
-  const [userForm, setUserForm] = useState({ fullName: '', email: '', phone: '', role: 'STAFF', position: '', password: '' });
+  const [userForm, setUserForm] = useState({ fullname: '', email: '', phone: '', role: 'STAFF', position: '', password: '' });
   const [editUserId, setEditUserId] = useState<string | null>(null);
 
   const { data: settingsData, isLoading: loadingSettings } = useQuery({
@@ -105,7 +105,7 @@ export default function Settings() {
     mutationFn: (body: typeof userForm) => editUserId ? api.patch(`/tenant/settings/users/${editUserId}`, body) : api.post('/tenant/settings/users', body),
     onSuccess: () => {
       enqueueSnackbar(editUserId ? 'User updated' : 'User added', { variant: 'success' });
-      setUserDialog(false); setUserForm({ fullName: '', email: '', phone: '', role: 'STAFF', position: '', password: '' }); setEditUserId(null);
+      setUserDialog(false); setUserForm({ fullname: '', email: '', phone: '', role: 'STAFF', position: '', password: '' }); setEditUserId(null);
       queryClient.invalidateQueries({ queryKey: ['settings-users'] });
     },
     onError: (e: any) => enqueueSnackbar(e.response?.data?.error || 'Failed', { variant: 'error' }),
@@ -166,7 +166,7 @@ export default function Settings() {
           <Box sx={{ px: 3, pb: 3 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
               <Typography sx={{ fontWeight: 600 }}>System Users</Typography>
-              <Button variant="outlined" startIcon={<Add />} onClick={() => { setUserForm({ fullName: '', email: '', phone: '', role: 'STAFF', position: '', password: '' }); setEditUserId(null); setUserDialog(true); }}>
+              <Button variant="outlined" startIcon={<Add />} onClick={() => { setUserForm({ fullname: '', email: '', phone: '', role: 'STAFF', position: '', password: '' }); setEditUserId(null); setUserDialog(true); }}>
                 Add User
               </Button>
             </Box>
@@ -188,8 +188,8 @@ export default function Settings() {
                     <TableRow key={u.id} hover>
                       <TableCell>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <Avatar sx={{ width: 32, height: 32, bgcolor: '#1a237e', fontSize: '0.8rem' }}>{(u.fullName || u.email)?.[0]?.toUpperCase()}</Avatar>
-                          <Typography sx={{ fontSize: '0.875rem', fontWeight: 600 }}>{u.fullName || '-'}</Typography>
+                          <Avatar sx={{ width: 32, height: 32, bgcolor: '#1a237e', fontSize: '0.8rem' }}>{(u.fullname || u.email)?.[0]?.toUpperCase()}</Avatar>
+                          <Typography sx={{ fontSize: '0.875rem', fontWeight: 600 }}>{u.fullname || '-'}</Typography>
                         </Box>
                       </TableCell>
                       <TableCell sx={{ fontSize: '0.83rem' }}>{u.email}</TableCell>
@@ -198,7 +198,7 @@ export default function Settings() {
                       <TableCell><Chip label={u.role} size="small" sx={{ fontSize: '0.7rem', bgcolor: 'rgba(26,35,126,0.07)', color: '#1a237e' }} /></TableCell>
                       <TableCell><Chip label={u.isActive ? 'Active' : 'Inactive'} size="small" sx={{ fontSize: '0.7rem', bgcolor: u.isActive ? 'rgba(46,125,50,0.1)' : 'rgba(0,0,0,0.05)', color: u.isActive ? '#2e7d32' : 'text.secondary' }} /></TableCell>
                       <TableCell align="center">
-                        <IconButton size="small" onClick={() => { setUserForm({ fullName: u.fullName || '', email: u.email, phone: u.phone || '', role: u.role, position: u.position || '', password: '' }); setEditUserId(u.id); setUserDialog(true); }}><Edit fontSize="small" /></IconButton>
+                        <IconButton size="small" onClick={() => { setUserForm({ fullname: u.fullname || '', email: u.email, phone: u.phone || '', role: u.role, position: u.position || '', password: '' }); setEditUserId(u.id); setUserDialog(true); }}><Edit fontSize="small" /></IconButton>
                         <IconButton size="small" color="error" onClick={() => { setSelectedUser(u); setDeleteUserDialog(true); }}><Delete fontSize="small" /></IconButton>
                       </TableCell>
                     </TableRow>
@@ -320,7 +320,7 @@ export default function Settings() {
                 ) : (auditData?.data || []).map((log: any) => (
                   <TableRow key={log.id} hover>
                     <TableCell sx={{ fontSize: '0.78rem', color: 'text.secondary', whiteSpace: 'nowrap' }}>{new Date(log.createdAt).toLocaleString()}</TableCell>
-                    <TableCell sx={{ fontSize: '0.82rem' }}>{log.user?.fullName || log.user?.email || 'System'}</TableCell>
+                    <TableCell sx={{ fontSize: '0.82rem' }}>{log.user?.fullname || log.user?.email || 'System'}</TableCell>
                     <TableCell><Chip label={log.action} size="small" sx={{ fontSize: '0.68rem', bgcolor: 'rgba(26,35,126,0.07)', color: '#1a237e', fontFamily: 'monospace' }} /></TableCell>
                     <TableCell sx={{ fontSize: '0.82rem' }}>{log.entity || '-'}</TableCell>
                     <TableCell sx={{ fontSize: '0.78rem', color: 'text.secondary', maxWidth: 200 }}>{typeof log.details === 'object' ? JSON.stringify(log.details).slice(0, 60) : String(log.details || '-')}</TableCell>
@@ -340,7 +340,7 @@ export default function Settings() {
         <DialogTitle>{editUserId ? 'Edit User' : 'Add User'}</DialogTitle>
         <DialogContent sx={{ pt: 2 }}>
           <Grid container spacing={2} sx={{ mt: 0 }}>
-            <Grid item xs={12}><TextField fullWidth label="Full Name *" value={userForm.fullName} onChange={(e) => setUserForm((f) => ({ ...f, fullName: e.target.value }))} size="small" /></Grid>
+            <Grid item xs={12}><TextField fullWidth label="Full Name *" value={userForm.fullname} onChange={(e) => setUserForm((f) => ({ ...f, fullname: e.target.value }))} size="small" /></Grid>
             <Grid item xs={12}><TextField fullWidth label="Email *" type="email" value={userForm.email} onChange={(e) => setUserForm((f) => ({ ...f, email: e.target.value }))} size="small" disabled={!!editUserId} /></Grid>
             <Grid item xs={12}><TextField fullWidth label="Phone" value={userForm.phone} onChange={(e) => setUserForm((f) => ({ ...f, phone: e.target.value }))} size="small" /></Grid>
             <Grid item xs={12}>
@@ -365,7 +365,7 @@ export default function Settings() {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setUserDialog(false)}>Cancel</Button>
-          <Button variant="contained" onClick={() => saveUserMutation.mutate(userForm)} disabled={saveUserMutation.isPending || !userForm.fullName || !userForm.email}>
+          <Button variant="contained" onClick={() => saveUserMutation.mutate(userForm)} disabled={saveUserMutation.isPending || !userForm.fullname || !userForm.email}>
             {saveUserMutation.isPending ? <CircularProgress size={20} color="inherit" /> : 'Save'}
           </Button>
         </DialogActions>
@@ -373,7 +373,7 @@ export default function Settings() {
 
       <Dialog open={deleteUserDialog} onClose={() => setDeleteUserDialog(false)} maxWidth="xs" fullWidth>
         <DialogTitle>Remove User</DialogTitle>
-        <DialogContent><Typography>Remove <strong>{selectedUser?.fullName}</strong> from the system?</Typography></DialogContent>
+        <DialogContent><Typography>Remove <strong>{selectedUser?.fullname}</strong> from the system?</Typography></DialogContent>
         <DialogActions>
           <Button onClick={() => setDeleteUserDialog(false)}>Cancel</Button>
           <Button variant="contained" color="error" onClick={() => deleteUserMutation.mutate(selectedUser?.id)} disabled={deleteUserMutation.isPending}>Remove</Button>
