@@ -20,16 +20,23 @@ const BIBLE_VERSES = [
 ];
 
 const HERO_IMAGES = [
+  // Cross at sunset
   'https://images.unsplash.com/photo-1519692933481-e162a57d6721?auto=format&fit=crop&w=1920&q=80',
-  'https://images.unsplash.com/photo-1438032005730-c779502df39b?auto=format&fit=crop&w=1920&q=80',
-  'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?auto=format&fit=crop&w=1920&q=80',
+  // Worship congregation — hands raised, no Catholic imagery
+  'https://images.unsplash.com/photo-1510651767069-f8feeed3a99f?auto=format&fit=crop&w=1920&q=80',
+  // Open Bible — clean, no icons/idols
+  'https://images.unsplash.com/photo-1507838153414-b4b713384a76?auto=format&fit=crop&w=1920&q=80',
 ];
 
 const GALLERY_IMAGES = [
+  // Joyful congregation together
   { src: 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=600&q=80', label: 'Vibrant Community' },
-  { src: 'https://images.unsplash.com/photo-1545905093-00b4b3b2d73e?auto=format&fit=crop&w=600&q=80', label: 'Worship & Praise' },
-  { src: 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?auto=format&fit=crop&w=600&q=80', label: 'Faith & Growth' },
-  { src: 'https://images.unsplash.com/photo-1477219242135-67c7d6c69dde?auto=format&fit=crop&w=600&q=80', label: 'Mission & Outreach' },
+  // Hands raised in worship
+  { src: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=600&q=80', label: 'Worship & Praise' },
+  // People in fellowship / small group
+  { src: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=600&q=80', label: 'Faith & Growth' },
+  // Community outreach / serving
+  { src: 'https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?auto=format&fit=crop&w=600&q=80', label: 'Mission & Outreach' },
 ];
 
 const PLANS = [
