@@ -1,0 +1,54 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const auth_1 = require("../middleware/auth");
+const auth_2 = __importDefault(require("./auth"));
+const tenants_1 = __importDefault(require("./superadmin/tenants"));
+const dashboard_1 = __importDefault(require("./superadmin/dashboard"));
+const analytics_1 = __importDefault(require("./superadmin/analytics"));
+const support_1 = __importDefault(require("./superadmin/support"));
+const auditLogs_1 = __importDefault(require("./superadmin/auditLogs"));
+const dashboard_2 = __importDefault(require("./tenant/dashboard"));
+const members_1 = __importDefault(require("./tenant/members"));
+const donations_1 = __importDefault(require("./tenant/donations"));
+const expenses_1 = __importDefault(require("./tenant/expenses"));
+const employees_1 = __importDefault(require("./tenant/employees"));
+const assets_1 = __importDefault(require("./tenant/assets"));
+const parishes_1 = __importDefault(require("./tenant/parishes"));
+const ministries_1 = __importDefault(require("./tenant/ministries"));
+const events_1 = __importDefault(require("./tenant/events"));
+const attendance_1 = __importDefault(require("./tenant/attendance"));
+const payroll_1 = __importDefault(require("./tenant/payroll"));
+const reports_1 = __importDefault(require("./tenant/reports"));
+const settings_1 = __importDefault(require("./tenant/settings"));
+const notifications_1 = __importDefault(require("./tenant/notifications"));
+const router = (0, express_1.Router)();
+router.use('/auth', auth_2.default);
+// SuperAdmin routes
+const sa = [auth_1.authenticate, auth_1.requireSuperAdmin];
+router.use('/superadmin/tenants', sa, tenants_1.default);
+router.use('/superadmin/dashboard', sa, dashboard_1.default);
+router.use('/superadmin/analytics', sa, analytics_1.default);
+router.use('/superadmin/support', sa, support_1.default);
+router.use('/superadmin/audit-logs', sa, auditLogs_1.default);
+// Tenant routes
+const ta = [auth_1.authenticate];
+router.use('/tenant/dashboard', ta, dashboard_2.default);
+router.use('/tenant/members', ta, members_1.default);
+router.use('/tenant/donations', ta, donations_1.default);
+router.use('/tenant/expenses', ta, expenses_1.default);
+router.use('/tenant/employees', ta, employees_1.default);
+router.use('/tenant/assets', ta, assets_1.default);
+router.use('/tenant/parishes', ta, parishes_1.default);
+router.use('/tenant/ministries', ta, ministries_1.default);
+router.use('/tenant/events', ta, events_1.default);
+router.use('/tenant/attendance', ta, attendance_1.default);
+router.use('/tenant/payroll', ta, payroll_1.default);
+router.use('/tenant/reports', ta, reports_1.default);
+router.use('/tenant/settings', ta, settings_1.default);
+router.use('/tenant/notifications', ta, notifications_1.default);
+exports.default = router;
+//# sourceMappingURL=index.js.map
