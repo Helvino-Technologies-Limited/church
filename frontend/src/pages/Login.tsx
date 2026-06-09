@@ -1,36 +1,26 @@
 import React, { useState } from 'react';
 import {
   Box, Container, Typography, TextField, Button, Card, CardContent,
-  Alert, InputAdornment, IconButton, Divider, Chip, Tooltip,
+  Alert, InputAdornment, IconButton, Divider,
   CircularProgress, Paper,
 } from '@mui/material';
 import {
-  Email, Lock, Visibility, VisibilityOff, Church, ContentCopy,
-  ArrowBack, AdminPanelSettings,
+  Email, Lock, Visibility, VisibilityOff, Church,
+  ArrowBack,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import api from '../services/api';
 import { setCredentials } from '../store/slices/authSlice';
 
-const DEMO_ACCOUNTS = [
-  {
-    label: 'Demo Church Admin',
-    sublabel: 'Grace Community Church',
-    email: 'admin@gracechurch.demo',
-    password: 'Demo@2024',
-    color: '#1a237e',
-    icon: <Church fontSize="small" />,
-  },
-  {
-    label: 'SuperAdmin',
-    sublabel: 'Helvino Technologies',
-    email: 'helvinotechltd@gmail.com',
-    password: 'Mycat@95',
-    color: '#b71c1c',
-    icon: <AdminPanelSettings fontSize="small" />,
-  },
-];
+const DEMO_ACCOUNT = {
+  label: 'Demo Church Account',
+  sublabel: 'Grace Community Church',
+  email: 'admin@gracechurch.demo',
+  password: 'Demo@2024',
+  color: '#1a237e',
+  icon: <Church fontSize="small" />,
+};
 
 export default function Login() {
   const navigate = useNavigate();
@@ -63,9 +53,9 @@ export default function Login() {
     }
   };
 
-  const fillDemo = (demo: (typeof DEMO_ACCOUNTS)[0]) => {
-    setEmail(demo.email);
-    setPassword(demo.password);
+  const fillDemo = () => {
+    setEmail(DEMO_ACCOUNT.email);
+    setPassword(DEMO_ACCOUNT.password);
     setError('');
   };
 
@@ -114,38 +104,35 @@ export default function Login() {
         {/* Demo credentials card */}
         <Paper sx={{ p: 2.5, mb: 3, background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 3 }}>
           <Typography sx={{ color: 'rgba(255,255,255,0.9)', fontWeight: 600, mb: 2, fontSize: '0.9rem', textAlign: 'center' }}>
-            ✨ Click any account below to auto-fill login credentials
+            ✨ Try our demo — click to auto-fill
           </Typography>
-          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-            {DEMO_ACCOUNTS.map((demo) => (
-              <Box
-                key={demo.email}
-                onClick={() => fillDemo(demo)}
-                sx={{
-                  flex: 1, minWidth: 180,
-                  p: 2, borderRadius: 2, cursor: 'pointer',
-                  border: `1px solid ${demo.color}40`,
-                  background: `${demo.color}20`,
-                  transition: 'all 0.2s',
-                  '&:hover': { background: `${demo.color}35`, transform: 'scale(1.02)', boxShadow: `0 4px 20px ${demo.color}30` },
-                }}
-              >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                  <Box sx={{ color: '#fdd54f' }}>{demo.icon}</Box>
-                  <Typography sx={{ color: 'white', fontWeight: 700, fontSize: '0.85rem' }}>{demo.label}</Typography>
-                </Box>
-                <Typography sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.75rem' }}>{demo.sublabel}</Typography>
-                <Divider sx={{ my: 1, borderColor: 'rgba(255,255,255,0.1)' }} />
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                  <Email sx={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }} />
-                  <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.7rem', fontFamily: 'monospace' }}>{demo.email}</Typography>
-                </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.3 }}>
-                  <Lock sx={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }} />
-                  <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.7rem', fontFamily: 'monospace' }}>{demo.password}</Typography>
-                </Box>
+          <Box
+            onClick={fillDemo}
+            sx={{
+              p: 2, borderRadius: 2, cursor: 'pointer',
+              border: '1px solid rgba(26,35,126,0.4)',
+              background: 'rgba(26,35,126,0.2)',
+              transition: 'all 0.2s',
+              '&:hover': { background: 'rgba(26,35,126,0.35)', transform: 'scale(1.01)', boxShadow: '0 4px 20px rgba(26,35,126,0.3)' },
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+              <Box sx={{ color: '#fdd54f' }}><Church fontSize="small" /></Box>
+              <Typography sx={{ color: 'white', fontWeight: 700, fontSize: '0.85rem' }}>{DEMO_ACCOUNT.label}</Typography>
+              <Box sx={{ ml: 'auto' }}>
+                <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.7rem' }}>click to fill</Typography>
               </Box>
-            ))}
+            </Box>
+            <Typography sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.75rem' }}>{DEMO_ACCOUNT.sublabel}</Typography>
+            <Divider sx={{ my: 1, borderColor: 'rgba(255,255,255,0.1)' }} />
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              <Email sx={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }} />
+              <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.7rem', fontFamily: 'monospace' }}>{DEMO_ACCOUNT.email}</Typography>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.3 }}>
+              <Lock sx={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }} />
+              <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.7rem', fontFamily: 'monospace' }}>••••••••</Typography>
+            </Box>
           </Box>
         </Paper>
 
