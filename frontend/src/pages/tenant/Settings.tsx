@@ -12,6 +12,12 @@ import api from '../../services/api';
 import { useSnackbar } from 'notistack';
 
 const ROLES = ['TENANT_ADMIN', 'ADMIN', 'MANAGER', 'STAFF', 'VIEWER'];
+const POSITIONS = [
+  'Church Administrator', 'Finance Officer', 'Secretary', 'Chairperson',
+  'Treasurer', 'Church Elder', 'Deacon', 'Deaconess', 'Youth Leader',
+  "Women's Leader", 'Worship Leader', 'Evangelism Coordinator',
+  'IT Officer', 'Communications Officer', 'General Staff',
+];
 const CURRENCIES = ['KES', 'USD', 'EUR', 'GBP', 'UGX', 'TZS', 'ZAR', 'NGN', 'GHS'];
 const TIMEZONES = ['Africa/Nairobi', 'Africa/Lagos', 'Africa/Accra', 'Africa/Kampala', 'Africa/Dar_es_Salaam', 'UTC', 'America/New_York', 'Europe/London'];
 const DATE_FORMATS = ['DD/MM/YYYY', 'MM/DD/YYYY', 'YYYY-MM-DD'];
@@ -36,7 +42,7 @@ export default function Settings() {
   const [pastor, setPastor] = useState({ pastorName: '', pastorSignature: '' });
   const [sigPreview, setSigPreview] = useState<string | null>(null);
   const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
-  const [userForm, setUserForm] = useState({ fullName: '', email: '', phone: '', role: 'STAFF', password: '' });
+  const [userForm, setUserForm] = useState({ fullName: '', email: '', phone: '', role: 'STAFF', position: '', password: '' });
   const [editUserId, setEditUserId] = useState<string | null>(null);
 
   const { data: settingsData, isLoading: loadingSettings } = useQuery({
@@ -99,7 +105,7 @@ export default function Settings() {
     mutationFn: (body: typeof userForm) => editUserId ? api.patch(`/tenant/settings/users/${editUserId}`, body) : api.post('/tenant/settings/users', body),
     onSuccess: () => {
       enqueueSnackbar(editUserId ? 'User updated' : 'User added', { variant: 'success' });
-      setUserDialog(false); setUserForm({ fullName: '', email: '', phone: '', role: 'STAFF', password: '' }); setEditUserId(null);
+      setUserDialog(false); setUserForm({ fullName: '', email: '', phone: '', role: 'STAFF', position: '', password: '' }); setEditUserId(null);
       queryClient.invalidateQueries({ queryKey: ['settings-users'] });
     },
     onError: (e: any) => enqueueSnackbar(e.response?.data?.error || 'Failed', { variant: 'error' }),
@@ -160,7 +166,7 @@ export default function Settings() {
           <Box sx={{ px: 3, pb: 3 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
               <Typography sx={{ fontWeight: 600 }}>System Users</Typography>
-              <Button variant="outlined" startIcon={<Add />} onClick={() => { setUserForm({ fullName: '', email: '', phone: '', role: 'STAFF', password: '' }); setEditUserId(null); setUserDialog(true); }}>
+              <Button variant="outlined" startIcon={<Add />} onClick={() => { setUserForm({ fullName: '', email: '', phone: '', role: 'STAFF', position: '', password: '' }); setEditUserId(null); setUserDialog(true); }}>
                 Add User
               </Button>
             </Box>
@@ -171,6 +177,7 @@ export default function Settings() {
                     <TableCell sx={{ fontWeight: 700 }}>Name</TableCell>
                     <TableCell sx={{ fontWeight: 700 }}>Email</TableCell>
                     <TableCell sx={{ fontWeight: 700 }}>Phone</TableCell>
+                    <TableCell sx={{ fontWeight: 700 }}>Position</TableCell>
                     <TableCell sx={{ fontWeight: 700 }}>Role</TableCell>
                     <TableCell sx={{ fontWeight: 700 }}>Status</TableCell>
                     <TableCell align="center" sx={{ fontWeight: 700 }}>Actions</TableCell>
@@ -187,10 +194,11 @@ export default function Settings() {
                       </TableCell>
                       <TableCell sx={{ fontSize: '0.83rem' }}>{u.email}</TableCell>
                       <TableCell sx={{ fontSize: '0.83rem' }}>{u.phone || '-'}</TableCell>
+                      <TableCell sx={{ fontSize: '0.83rem' }}>{u.position || <span style={{ color: '#9e9e9e' }}>—</span>}</TableCell>
                       <TableCell><Chip label={u.role} size="small" sx={{ fontSize: '0.7rem', bgcolor: 'rgba(26,35,126,0.07)', color: '#1a237e' }} /></TableCell>
                       <TableCell><Chip label={u.isActive ? 'Active' : 'Inactive'} size="small" sx={{ fontSize: '0.7rem', bgcolor: u.isActive ? 'rgba(46,125,50,0.1)' : 'rgba(0,0,0,0.05)', color: u.isActive ? '#2e7d32' : 'text.secondary' }} /></TableCell>
                       <TableCell align="center">
-                        <IconButton size="small" onClick={() => { setUserForm({ fullName: u.fullName || '', email: u.email, phone: u.phone || '', role: u.role, password: '' }); setEditUserId(u.id); setUserDialog(true); }}><Edit fontSize="small" /></IconButton>
+                        <IconButton size="small" onClick={() => { setUserForm({ fullName: u.fullName || '', email: u.email, phone: u.phone || '', role: u.role, position: u.position || '', password: '' }); setEditUserId(u.id); setUserDialog(true); }}><Edit fontSize="small" /></IconButton>
                         <IconButton size="small" color="error" onClick={() => { setSelectedUser(u); setDeleteUserDialog(true); }}><Delete fontSize="small" /></IconButton>
                       </TableCell>
                     </TableRow>
@@ -340,6 +348,15 @@ export default function Settings() {
                 <InputLabel>Role</InputLabel>
                 <Select value={userForm.role} label="Role" onChange={(e) => setUserForm((f) => ({ ...f, role: e.target.value }))}>
                   {ROLES.map((r) => <MenuItem key={r} value={r}>{r}</MenuItem>)}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12}>
+              <FormControl fullWidth size="small">
+                <InputLabel>Position / Title</InputLabel>
+                <Select value={userForm.position} label="Position / Title" onChange={(e) => setUserForm((f) => ({ ...f, position: e.target.value }))}>
+                  <MenuItem value=""><em>None</em></MenuItem>
+                  {POSITIONS.map((p) => <MenuItem key={p} value={p}>{p}</MenuItem>)}
                 </Select>
               </FormControl>
             </Grid>

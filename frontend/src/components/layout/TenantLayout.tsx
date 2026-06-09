@@ -17,6 +17,8 @@ import { useQuery } from '@tanstack/react-query';
 import { logout } from '../../store/slices/authSlice';
 import { RootState } from '../../store';
 import api from '../../services/api';
+import TrialBanner from '../TrialBanner';
+import TrialExpiredScreen from '../TrialExpiredScreen';
 
 function timeAgo(dateStr: string) {
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -102,6 +104,17 @@ export default function TenantLayout() {
     dispatch(logout());
     navigate('/login');
   };
+
+  // Trial status
+  const tenantStatus = user?.tenant?.status;
+  const trialEndsAt = user?.tenant?.trialEndsAt;
+  const trialExpired = tenantStatus === 'TRIAL' && trialEndsAt && new Date(trialEndsAt) < new Date();
+  const inTrial = tenantStatus === 'TRIAL' && trialEndsAt && new Date(trialEndsAt) >= new Date();
+  const accountLocked = trialExpired || tenantStatus === 'SUSPENDED' || tenantStatus === 'EXPIRED';
+
+  if (accountLocked) {
+    return <TrialExpiredScreen tenantName={user?.tenant?.name} />;
+  }
 
   const tenantName = user?.tenant?.name || 'My Church';
   const initials = tenantName.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase();
@@ -263,6 +276,7 @@ export default function TenantLayout() {
         </AppBar>
 
         <Box sx={{ flex: 1, p: { xs: 2, md: 3 }, overflow: 'auto' }}>
+          {inTrial && trialEndsAt && <TrialBanner trialEndsAt={trialEndsAt} />}
           <Outlet />
         </Box>
       </Box>

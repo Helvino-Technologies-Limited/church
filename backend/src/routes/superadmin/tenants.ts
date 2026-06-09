@@ -127,6 +127,31 @@ router.patch('/:id/verify', async (req: AuthRequest, res: Response, next: NextFu
   }
 });
 
+// PATCH /api/superadmin/tenants/:id/activate — activate after payment
+router.patch('/:id/activate', async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const tenant = await prisma.tenant.update({
+      where: { id: req.params.id },
+      data: {
+        status: TenantStatus.ACTIVE,
+        isVerified: true,
+        verifiedAt: new Date(),
+        subscriptionEndsAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+      },
+    });
+    await createAuditLog({
+      userId: req.user!.userId,
+      userEmail: req.user!.email,
+      action: 'TENANT_ACTIVATED',
+      entity: 'Tenant',
+      entityId: req.params.id,
+      details: { tenantName: tenant.name },
+      req,
+    });
+    res.json({ success: true, message: `${tenant.name} activated for 1 year`, data: tenant });
+  } catch (err) { next(err); }
+});
+
 // POST /api/superadmin/tenants/:id/reset-password
 router.post('/:id/reset-password', async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {

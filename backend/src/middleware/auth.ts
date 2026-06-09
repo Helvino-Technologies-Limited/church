@@ -3,6 +3,7 @@ import { verifyAccessToken } from '../utils/jwt';
 import { AuthRequest } from '../types';
 import { UserRole } from '@prisma/client';
 import { AppError } from './errorHandler';
+import prisma from '../config/database';
 
 export const authenticate = (req: AuthRequest, _res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization;
@@ -40,3 +41,27 @@ export const requireAuth = (roles?: UserRole[]) =>
       next();
     });
   };
+
+export const checkTenantActive = async (req: AuthRequest, _res: Response, next: NextFunction) => {
+  if (!req.tenantId) return next();
+  try {
+    const tenant = await prisma.tenant.findUnique({
+      where: { id: req.tenantId },
+      select: { status: true, trialEndsAt: true },
+    });
+    if (!tenant) return next(new AppError('Tenant not found', 404));
+
+    if (tenant.status === 'TRIAL' && tenant.trialEndsAt && tenant.trialEndsAt < new Date()) {
+      return next(new AppError('Trial expired. Pay KES 50,000 via Paybill 522533, Account 8071524 to activate.', 403));
+    }
+    if (tenant.status === 'SUSPENDED') {
+      return next(new AppError('Account suspended. Contact support.', 403));
+    }
+    if (tenant.status === 'EXPIRED') {
+      return next(new AppError('Subscription expired. Contact support to renew.', 403));
+    }
+    next();
+  } catch (err) {
+    next(err);
+  }
+};

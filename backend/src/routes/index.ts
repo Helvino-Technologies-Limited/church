@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { authenticate, requireSuperAdmin } from '../middleware/auth';
+import { authenticate, requireSuperAdmin, checkTenantActive } from '../middleware/auth';
 import authRoutes from './auth';
 import superAdminTenantsRoutes from './superadmin/tenants';
 import superAdminDashboardRoutes from './superadmin/dashboard';
@@ -36,8 +36,8 @@ router.use('/superadmin/analytics', sa, superAdminAnalyticsRoutes);
 router.use('/superadmin/support', sa, superAdminSupportRoutes);
 router.use('/superadmin/audit-logs', sa, superAdminAuditLogsRoutes);
 
-// Tenant routes
-const ta = [authenticate];
+// Tenant routes — authenticate + verify tenant is active/within trial
+const ta = [authenticate, checkTenantActive];
 router.use('/tenant/dashboard', ta, tenantDashboardRoutes);
 router.use('/tenant/members', ta, tenantMembersRoutes);
 router.use('/tenant/donations', ta, tenantDonationsRoutes);

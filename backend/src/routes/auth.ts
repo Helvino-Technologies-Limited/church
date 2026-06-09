@@ -56,7 +56,10 @@ router.post('/login', async (req: Request, res: Response, next: NextFunction) =>
       throw new AppError('Your church account has been suspended. Contact support.', 403);
     }
     if (user.tenant && user.tenant.status === TenantStatus.EXPIRED) {
-      throw new AppError('Your subscription has expired. Please renew.', 403);
+      throw new AppError('Your subscription has expired. Please contact support to renew.', 403);
+    }
+    if (user.tenant && user.tenant.status === TenantStatus.TRIAL && user.tenant.trialEndsAt && user.tenant.trialEndsAt < new Date()) {
+      throw new AppError('Your 5-day free trial has expired. Please pay KES 50,000 via M-Pesa Paybill 522533, Account 8071524 to activate your account, or contact support.', 403);
     }
 
     const payload = {
@@ -100,7 +103,7 @@ router.post('/login', async (req: Request, res: Response, next: NextFunction) =>
           role: user.role,
           tenantId: user.tenantId,
           tenant: user.tenant
-            ? { id: user.tenant.id, name: user.tenant.name, slug: user.tenant.slug, logo: user.tenant.logo, status: user.tenant.status }
+            ? { id: user.tenant.id, name: user.tenant.name, slug: user.tenant.slug, logo: user.tenant.logo, status: user.tenant.status, trialEndsAt: user.tenant.trialEndsAt, subscriptionEndsAt: user.tenant.subscriptionEndsAt }
             : null,
         },
       },
@@ -145,7 +148,7 @@ router.post('/register', async (req: Request, res: Response, next: NextFunction)
         registrationNumber: data.registrationNumber,
         subscriptionPlan: SubscriptionPlan.STARTER,
         status: TenantStatus.TRIAL,
-        trialEndsAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        trialEndsAt: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
       },
     });
 
@@ -246,7 +249,7 @@ router.get('/me', authenticate, async (req: AuthRequest, res: Response, next: Ne
   try {
     const user = await prisma.user.findUnique({
       where: { id: req.user!.userId },
-      include: { tenant: { select: { id: true, name: true, slug: true, logo: true, status: true, subscriptionPlan: true } } },
+      include: { tenant: { select: { id: true, name: true, slug: true, logo: true, status: true, subscriptionPlan: true, trialEndsAt: true, subscriptionEndsAt: true } } },
     });
     if (!user) throw new AppError('User not found', 404);
     const { passwordHash: _ph, ...safeUser } = user;

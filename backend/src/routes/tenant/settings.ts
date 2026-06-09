@@ -55,7 +55,7 @@ router.get('/users', async (req: AuthRequest, res: Response, next: NextFunction)
   try {
     const users = await prisma.user.findMany({
       where: { tenantId: req.tenantId! },
-      select: { id: true, fullname: true, email: true, phone: true, role: true, status: true, lastLoginAt: true, createdAt: true },
+      select: { id: true, fullname: true, email: true, phone: true, role: true, position: true, status: true, lastLoginAt: true, createdAt: true },
       orderBy: { createdAt: 'asc' },
     });
     res.json({ success: true, data: users });
@@ -65,7 +65,7 @@ router.get('/users', async (req: AuthRequest, res: Response, next: NextFunction)
 // POST /api/tenant/settings/users
 router.post('/users', async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const { fullname, email, phone, role, password } = req.body;
+    const { fullname, email, phone, role, position, password } = req.body;
     if (!fullname || !email || !password) throw new AppError('Name, email, and password are required', 400);
     if (password.length < 8) throw new AppError('Password must be at least 8 characters', 400);
 
@@ -75,11 +75,11 @@ router.post('/users', async (req: AuthRequest, res: Response, next: NextFunction
     const user = await prisma.user.create({
       data: {
         tenantId: req.tenantId!,
-        fullname, email, phone,
+        fullname, email, phone, position,
         role: role || UserRole.STAFF,
         passwordHash: await hashPassword(password),
       },
-      select: { id: true, fullname: true, email: true, phone: true, role: true, status: true, createdAt: true },
+      select: { id: true, fullname: true, email: true, phone: true, role: true, position: true, status: true, createdAt: true },
     });
     res.status(201).json({ success: true, data: user });
   } catch (err) { next(err); }
@@ -91,11 +91,11 @@ router.patch('/users/:id', async (req: AuthRequest, res: Response, next: NextFun
     const user = await prisma.user.findFirst({ where: { id: req.params.id, tenantId: req.tenantId! } });
     if (!user) throw new AppError('User not found', 404);
 
-    const { fullname, phone, role, status } = req.body;
+    const { fullname, phone, role, position, status } = req.body;
     const updated = await prisma.user.update({
       where: { id: req.params.id },
-      data: { fullname, phone, role, status },
-      select: { id: true, fullname: true, email: true, phone: true, role: true, status: true },
+      data: { fullname, phone, role, position, status },
+      select: { id: true, fullname: true, email: true, phone: true, role: true, position: true, status: true },
     });
     res.json({ success: true, data: updated });
   } catch (err) { next(err); }

@@ -6,6 +6,8 @@ interface Tenant {
   slug: string;
   logo: string | null;
   status: string;
+  trialEndsAt: string | null;
+  subscriptionEndsAt: string | null;
 }
 
 interface AuthUser {
