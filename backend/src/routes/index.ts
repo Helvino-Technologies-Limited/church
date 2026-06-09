@@ -19,6 +19,7 @@ import tenantAttendanceRoutes from './tenant/attendance';
 import tenantPayrollRoutes from './tenant/payroll';
 import tenantReportsRoutes from './tenant/reports';
 import tenantSettingsRoutes from './tenant/settings';
+import tenantNotificationsRoutes from './tenant/notifications';
 
 const router = Router();
 
@@ -47,5 +48,6 @@ router.use('/tenant/attendance', ta, tenantAttendanceRoutes);
 router.use('/tenant/payroll', ta, tenantPayrollRoutes);
 router.use('/tenant/reports', ta, tenantReportsRoutes);
 router.use('/tenant/settings', ta, tenantSettingsRoutes);
+router.use('/tenant/notifications', ta, tenantNotificationsRoutes);
 
 export default router;

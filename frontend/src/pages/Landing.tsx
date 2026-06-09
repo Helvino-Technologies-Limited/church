@@ -9,7 +9,58 @@ import {
   CheckCircle, ArrowForward, Menu, Close, Phone, Email, Language,
   FormatQuote, Star, PlayArrow,
 } from '@mui/icons-material';
+import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
+
+const JSON_LD_ORGANIZATION = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Helvino Technologies LTD',
+  url: 'https://churchmanager-one.vercel.app',
+  logo: 'https://churchmanager-one.vercel.app/favicon.svg',
+  contactPoint: {
+    '@type': 'ContactPoint',
+    telephone: '+254-110-421-320',
+    contactType: 'customer support',
+    areaServed: 'KE',
+    availableLanguage: 'English',
+  },
+  sameAs: [],
+};
+
+const JSON_LD_SOFTWARE = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'CMS-360',
+  alternateName: 'Church Management System 360',
+  applicationCategory: 'BusinessApplication',
+  operatingSystem: 'Web',
+  url: 'https://churchmanager-one.vercel.app',
+  description: 'CMS-360 is a cloud-based, multi-tenant church management platform for Kenyan churches. Manage members, attendance, donations, payroll, and finance — all in one system.',
+  offers: [
+    { '@type': 'Offer', name: 'Starter', price: '1500', priceCurrency: 'KES', billingIncrement: 'P1M' },
+    { '@type': 'Offer', name: 'Standard', price: '3500', priceCurrency: 'KES', billingIncrement: 'P1M' },
+    { '@type': 'Offer', name: 'Professional', price: '7500', priceCurrency: 'KES', billingIncrement: 'P1M' },
+  ],
+  author: { '@type': 'Organization', name: 'Helvino Technologies LTD' },
+  inLanguage: 'en-KE',
+  keywords: 'church management software Kenya, parish management, tithe tracking, church attendance',
+};
+
+const JSON_LD_WEBPAGE = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: 'CMS-360 — Church Management Software for Kenya',
+  description: 'Cloud-based church management platform. Manage members, attendance, donations, payroll and finance in one system.',
+  url: 'https://churchmanager-one.vercel.app',
+  inLanguage: 'en-KE',
+  publisher: { '@type': 'Organization', name: 'Helvino Technologies LTD' },
+  potentialAction: {
+    '@type': 'RegisterAction',
+    target: 'https://churchmanager-one.vercel.app/register',
+    name: 'Start Free Trial',
+  },
+};
 
 const BIBLE_VERSES = [
   { verse: '"For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life."', ref: 'John 3:16' },
@@ -105,6 +156,19 @@ export default function Landing() {
 
   return (
     <Box>
+      {/* ── SEO ─────────────────────────────────── */}
+      <Helmet>
+        <title>CMS-360 | Church Management Software — Kenya</title>
+        <meta name="description" content="CMS-360 is a cloud-based church management platform for Kenyan churches. Manage members, attendance, donations, payroll, and finance — all in one system. Free trial available." />
+        <meta name="keywords" content="church management software Kenya, church management system, church member management, church attendance tracking, church finance software, parish management, tithe tracking, church ERP, diocese management, CMS-360, Helvino Technologies" />
+        <link rel="canonical" href="https://churchmanager-one.vercel.app/" />
+        <meta property="og:url" content="https://churchmanager-one.vercel.app/" />
+        <meta property="og:type" content="website" />
+        <script type="application/ld+json">{JSON.stringify(JSON_LD_ORGANIZATION)}</script>
+        <script type="application/ld+json">{JSON.stringify(JSON_LD_SOFTWARE)}</script>
+        <script type="application/ld+json">{JSON.stringify(JSON_LD_WEBPAGE)}</script>
+      </Helmet>
+
       {/* ── Navbar ──────────────────────────────── */}
       <AppBar
         position="fixed"
@@ -398,65 +462,107 @@ export default function Landing() {
           <Box sx={{ textAlign: 'center', mb: 8 }}>
             <Chip label="PRICING" sx={{ bgcolor: 'rgba(26,35,126,0.08)', color: '#1a237e', fontWeight: 700, mb: 2 }} />
             <Typography variant="h2" sx={{ fontSize: { xs: '2rem', md: '2.8rem' }, color: '#1a237e', mb: 2 }}>
-              Transparent, Simple Pricing
+              Simple, Transparent Pricing
             </Typography>
             <Typography sx={{ color: 'text.secondary', fontSize: '1.1rem' }}>
-              Start free for 30 days. No credit card required.
+              One system. Everything your church needs. No hidden fees.
             </Typography>
           </Box>
 
-          <Grid container spacing={3} alignItems="stretch">
-            {PLANS.map((plan) => (
-              <Grid item xs={12} sm={6} md={3} key={plan.name}>
-                <Card
-                  sx={{
-                    height: '100%',
-                    border: plan.popular ? `2px solid ${plan.color}` : '1px solid rgba(0,0,0,0.08)',
-                    position: 'relative',
-                    transition: 'transform 0.2s',
-                    '&:hover': { transform: 'translateY(-6px)' },
-                  }}
-                >
-                  {plan.popular && (
-                    <Chip
-                      label="MOST POPULAR"
-                      size="small"
-                      sx={{ position: 'absolute', top: -14, left: '50%', transform: 'translateX(-50%)', bgcolor: plan.color, color: 'white', fontWeight: 700, fontSize: '0.65rem' }}
-                    />
-                  )}
-                  <CardContent sx={{ p: 3 }}>
-                    <Box sx={{ width: 48, height: 48, borderRadius: 2, bgcolor: plan.color, display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2 }}>
-                      <Church sx={{ color: 'white', fontSize: 24 }} />
-                    </Box>
-                    <Typography variant="h5" sx={{ fontWeight: 700, color: plan.color, mb: 0.5 }}>{plan.name}</Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5, mb: 3 }}>
-                      <Typography variant="h4" sx={{ fontWeight: 800, color: '#1a237e' }}>{plan.price}</Typography>
-                      <Typography sx={{ color: 'text.secondary', fontSize: '0.9rem' }}>{plan.period}</Typography>
-                    </Box>
-                    <Divider sx={{ mb: 2 }} />
-                    <List dense disablePadding>
-                      {plan.features.map((f) => (
-                        <ListItem key={f} disablePadding sx={{ mb: 0.5 }}>
-                          <ListItemIcon sx={{ minWidth: 28 }}>
-                            <CheckCircle sx={{ fontSize: 18, color: plan.color }} />
-                          </ListItemIcon>
-                          <ListItemText primary={f} primaryTypographyProps={{ fontSize: '0.88rem' }} />
-                        </ListItem>
-                      ))}
-                    </List>
-                    <Button
-                      fullWidth
-                      variant={plan.popular ? 'contained' : 'outlined'}
-                      sx={{ mt: 3, borderColor: plan.color, color: plan.popular ? 'white' : plan.color, bgcolor: plan.popular ? plan.color : 'transparent', '&:hover': { bgcolor: plan.color, color: 'white' } }}
-                      onClick={() => navigate('/register')}
-                    >
-                      Get Started
-                    </Button>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
+          {/* Two pricing cards */}
+          <Grid container spacing={4} justifyContent="center" alignItems="stretch" sx={{ mb: 6 }}>
+            {/* Year 1 */}
+            <Grid item xs={12} sm={6} md={4}>
+              <Card sx={{ height: '100%', border: '1px solid rgba(0,0,0,0.08)', transition: 'transform 0.2s', '&:hover': { transform: 'translateY(-6px)', boxShadow: 6 } }}>
+                <CardContent sx={{ p: 4, textAlign: 'center' }}>
+                  <Box sx={{ width: 56, height: 56, borderRadius: 2, bgcolor: '#4caf50', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2, mx: 'auto' }}>
+                    <Church sx={{ color: 'white', fontSize: 28 }} />
+                  </Box>
+                  <Typography variant="h5" sx={{ fontWeight: 700, color: '#4caf50', mb: 0.5 }}>First Year</Typography>
+                  <Typography sx={{ color: 'text.secondary', fontSize: '0.85rem', mb: 2 }}>Full access — onboarding included</Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5, mb: 1, justifyContent: 'center' }}>
+                    <Typography variant="h3" sx={{ fontWeight: 900, color: '#1a237e' }}>KES 50,000</Typography>
+                  </Box>
+                  <Typography sx={{ color: 'text.secondary', fontSize: '0.85rem', mb: 3 }}>one-time first-year fee</Typography>
+                  <Divider sx={{ mb: 3 }} />
+                  <List dense disablePadding sx={{ textAlign: 'left', mb: 3 }}>
+                    {['All Modules Included', 'Unlimited Members', 'Multi-Branch Support', 'Finance & Payroll', 'Reports & Analytics', 'Free Setup & Training', 'Email & Phone Support'].map((f) => (
+                      <ListItem key={f} disablePadding sx={{ mb: 0.8 }}>
+                        <ListItemIcon sx={{ minWidth: 28 }}><CheckCircle sx={{ fontSize: 18, color: '#4caf50' }} /></ListItemIcon>
+                        <ListItemText primary={f} primaryTypographyProps={{ fontSize: '0.9rem' }} />
+                      </ListItem>
+                    ))}
+                  </List>
+                  <Button fullWidth variant="outlined" sx={{ borderColor: '#4caf50', color: '#4caf50', fontWeight: 700, '&:hover': { bgcolor: '#4caf50', color: 'white' } }} onClick={() => navigate('/register')}>
+                    Start Free Trial
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* Annual Renewal */}
+            <Grid item xs={12} sm={6} md={4}>
+              <Card sx={{ height: '100%', border: '2px solid #1a237e', position: 'relative', transition: 'transform 0.2s', '&:hover': { transform: 'translateY(-6px)', boxShadow: 6 } }}>
+                <Chip label="RENEWAL RATE" size="small" sx={{ position: 'absolute', top: -14, left: '50%', transform: 'translateX(-50%)', bgcolor: '#1a237e', color: 'white', fontWeight: 700, fontSize: '0.65rem' }} />
+                <CardContent sx={{ p: 4, textAlign: 'center' }}>
+                  <Box sx={{ width: 56, height: 56, borderRadius: 2, bgcolor: '#1a237e', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2, mx: 'auto' }}>
+                    <Church sx={{ color: '#fdd54f', fontSize: 28 }} />
+                  </Box>
+                  <Typography variant="h5" sx={{ fontWeight: 700, color: '#1a237e', mb: 0.5 }}>Annual Renewal</Typography>
+                  <Typography sx={{ color: 'text.secondary', fontSize: '0.85rem', mb: 2 }}>Year 2 onwards — same full access</Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5, mb: 1, justifyContent: 'center' }}>
+                    <Typography variant="h3" sx={{ fontWeight: 900, color: '#1a237e' }}>KES 20,000</Typography>
+                  </Box>
+                  <Typography sx={{ color: 'text.secondary', fontSize: '0.85rem', mb: 3 }}>per year</Typography>
+                  <Divider sx={{ mb: 3 }} />
+                  <List dense disablePadding sx={{ textAlign: 'left', mb: 3 }}>
+                    {['All Modules Included', 'Unlimited Members', 'Multi-Branch Support', 'Finance & Payroll', 'Reports & Analytics', 'Ongoing Updates', 'Priority Support'].map((f) => (
+                      <ListItem key={f} disablePadding sx={{ mb: 0.8 }}>
+                        <ListItemIcon sx={{ minWidth: 28 }}><CheckCircle sx={{ fontSize: 18, color: '#1a237e' }} /></ListItemIcon>
+                        <ListItemText primary={f} primaryTypographyProps={{ fontSize: '0.9rem' }} />
+                      </ListItem>
+                    ))}
+                  </List>
+                  <Button fullWidth variant="contained" sx={{ bgcolor: '#1a237e', fontWeight: 700, '&:hover': { bgcolor: '#283593' } }} onClick={() => navigate('/register')}>
+                    Get Started
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
           </Grid>
+
+          {/* M-Pesa Payment Box */}
+          <Box sx={{ maxWidth: 520, mx: 'auto' }}>
+            <Paper
+              sx={{
+                p: 3, borderRadius: 3, textAlign: 'center',
+                background: 'linear-gradient(135deg,#1a237e 0%,#283593 100%)',
+                color: 'white',
+              }}
+            >
+              <Typography sx={{ fontWeight: 800, fontSize: '1.1rem', mb: 1 }}>Pay via M-Pesa</Typography>
+              <Typography sx={{ opacity: 0.8, fontSize: '0.85rem', mb: 2 }}>
+                Subscribe or renew instantly using M-Pesa Paybill
+              </Typography>
+              <Grid container spacing={2} justifyContent="center">
+                <Grid item xs={6}>
+                  <Box sx={{ bgcolor: 'rgba(255,255,255,0.12)', borderRadius: 2, p: 1.5 }}>
+                    <Typography sx={{ fontSize: '0.7rem', opacity: 0.7, textTransform: 'uppercase', letterSpacing: 1 }}>Paybill Number</Typography>
+                    <Typography sx={{ fontWeight: 900, fontSize: '1.4rem', color: '#fdd54f', fontFamily: 'monospace' }}>522533</Typography>
+                  </Box>
+                </Grid>
+                <Grid item xs={6}>
+                  <Box sx={{ bgcolor: 'rgba(255,255,255,0.12)', borderRadius: 2, p: 1.5 }}>
+                    <Typography sx={{ fontSize: '0.7rem', opacity: 0.7, textTransform: 'uppercase', letterSpacing: 1 }}>Account Number</Typography>
+                    <Typography sx={{ fontWeight: 900, fontSize: '1.4rem', color: '#fdd54f', fontFamily: 'monospace' }}>8071524</Typography>
+                  </Box>
+                </Grid>
+              </Grid>
+              <Typography sx={{ mt: 2, fontSize: '0.75rem', opacity: 0.6 }}>
+                Use your church name as payment reference. Send receipt to info@helvino.org
+              </Typography>
+            </Paper>
+          </Box>
         </Container>
       </Box>
 

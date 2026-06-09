@@ -3,17 +3,34 @@ import {
   Box, Drawer, AppBar, Toolbar, Typography, List, ListItem,
   ListItemButton, ListItemIcon, ListItemText, IconButton, Avatar,
   Divider, Menu, MenuItem, Tooltip, Badge, Chip, useMediaQuery, useTheme,
+  Popover, Paper, CircularProgress,
 } from '@mui/material';
 import {
   Dashboard, People, AttachMoney, Work, Inventory, Church,
-  Logout, Menu as MenuIcon, ChevronLeft, Notifications,
+  Logout, Menu as MenuIcon, ChevronLeft, Notifications, NotificationsNone,
   Settings, Person, EventNote, AccountBalance, GroupWork,
   Business, BarChart, HowToReg, Payments,
 } from '@mui/icons-material';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { useQuery } from '@tanstack/react-query';
 import { logout } from '../../store/slices/authSlice';
 import { RootState } from '../../store';
+import api from '../../services/api';
+
+function timeAgo(dateStr: string) {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const m = Math.floor(diff / 60000);
+  if (m < 1) return 'just now';
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  return `${Math.floor(h / 24)}d ago`;
+}
+
+function actionLabel(action: string) {
+  return action.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+}
 
 const DRAWER_WIDTH = 260;
 
@@ -62,6 +79,21 @@ export default function TenantLayout() {
   const user = useSelector((s: RootState) => s.auth.user);
   const [drawerOpen, setDrawerOpen] = useState(!isMobile);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [notifAnchor, setNotifAnchor] = useState<null | HTMLElement>(null);
+  const [notifSeen, setNotifSeen] = useState(false);
+
+  const { data: notifData, isLoading: notifLoading } = useQuery({
+    queryKey: ['notifications'],
+    queryFn: () => api.get('/tenant/notifications').then((r) => r.data.data),
+    refetchInterval: 60000,
+  });
+  const notifications: any[] = notifData || [];
+  const unreadCount = notifSeen ? 0 : Math.min(notifications.length, 9);
+
+  const handleNotifOpen = (e: React.MouseEvent<HTMLElement>) => {
+    setNotifAnchor(e.currentTarget);
+    setNotifSeen(true);
+  };
 
   const handleLogout = () => {
     dispatch(logout());
@@ -160,10 +192,61 @@ export default function TenantLayout() {
               <Typography sx={{ fontWeight: 700, color: '#1a237e', fontSize: '0.95rem' }}>{tenantName}</Typography>
             </Box>
             <Tooltip title="Notifications">
-              <IconButton size="small">
-                <Badge badgeContent={2} color="error"><Notifications fontSize="small" /></Badge>
+              <IconButton size="small" onClick={handleNotifOpen}>
+                <Badge badgeContent={unreadCount} color="error" max={9}>
+                  {unreadCount > 0 ? <Notifications fontSize="small" /> : <NotificationsNone fontSize="small" />}
+                </Badge>
               </IconButton>
             </Tooltip>
+
+            {/* Notifications Popover */}
+            <Popover
+              open={!!notifAnchor}
+              anchorEl={notifAnchor}
+              onClose={() => setNotifAnchor(null)}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+              transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+              PaperProps={{ sx: { width: 340, maxHeight: 480, borderRadius: 2, boxShadow: 6 } }}
+            >
+              <Box sx={{ px: 2.5, py: 1.5, borderBottom: '1px solid rgba(0,0,0,0.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Typography sx={{ fontWeight: 700, color: '#1a237e', fontSize: '0.95rem' }}>Activity Feed</Typography>
+                <Chip label={`${notifications.length} recent`} size="small" sx={{ fontSize: '0.7rem' }} />
+              </Box>
+              {notifLoading ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}><CircularProgress size={24} /></Box>
+              ) : notifications.length === 0 ? (
+                <Box sx={{ p: 4, textAlign: 'center' }}>
+                  <NotificationsNone sx={{ fontSize: 40, color: 'text.disabled', mb: 1 }} />
+                  <Typography sx={{ color: 'text.secondary', fontSize: '0.85rem' }}>No activity yet</Typography>
+                </Box>
+              ) : (
+                <List dense disablePadding sx={{ maxHeight: 400, overflowY: 'auto' }}>
+                  {notifications.map((n: any, i: number) => (
+                    <React.Fragment key={n.id}>
+                      <ListItem alignItems="flex-start" sx={{ py: 1.2, px: 2.5 }}>
+                        <ListItemIcon sx={{ minWidth: 36, mt: 0.3 }}>
+                          <Avatar sx={{ width: 28, height: 28, bgcolor: '#1a237e', fontSize: '0.65rem', fontWeight: 700 }}>
+                            {(n.userEmail || '?')[0].toUpperCase()}
+                          </Avatar>
+                        </ListItemIcon>
+                        <ListItemText
+                          primary={<Typography sx={{ fontSize: '0.82rem', fontWeight: 600, color: '#1a237e' }}>{actionLabel(n.action)}</Typography>}
+                          secondary={
+                            <Box component="span" sx={{ display: 'block' }}>
+                              {n.entity && <Typography component="span" sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>{n.entity}</Typography>}
+                              <Typography component="span" sx={{ fontSize: '0.7rem', color: 'text.disabled', display: 'block' }}>
+                                {n.userEmail} · {timeAgo(n.createdAt)}
+                              </Typography>
+                            </Box>
+                          }
+                        />
+                      </ListItem>
+                      {i < notifications.length - 1 && <Divider component="li" />}
+                    </React.Fragment>
+                  ))}
+                </List>
+              )}
+            </Popover>
             <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} size="small" sx={{ ml: 1 }}>
               <Avatar sx={{ width: 32, height: 32, bgcolor: '#1a237e', fontSize: '0.75rem' }}>
                 {user?.fullname?.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase()}

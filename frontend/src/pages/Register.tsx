@@ -5,6 +5,7 @@ import {
   InputAdornment, Chip, Paper, RadioGroup, FormControlLabel, Radio,
 } from '@mui/material';
 import { Church, Person, ArrowForward, ArrowBack, CheckCircle } from '@mui/icons-material';
+import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 
@@ -97,6 +98,16 @@ export default function Register() {
   }
 
   return (
+    <>
+    <Helmet>
+      <title>Register Your Church — Free Trial | CMS-360</title>
+      <meta name="description" content="Start your free trial of CMS-360. Register your church and manage members, attendance, donations, payroll and finance with Kenya's leading church management software." />
+      <meta name="keywords" content="register church management software Kenya, church management free trial, church software signup" />
+      <link rel="canonical" href="https://churchmanager-one.vercel.app/register" />
+      <meta property="og:title" content="Register Your Church — Free Trial | CMS-360" />
+      <meta property="og:description" content="Start your free trial of CMS-360. Kenya's leading church management platform." />
+      <meta property="og:url" content="https://churchmanager-one.vercel.app/register" />
+    </Helmet>
     <Box sx={{ minHeight: '100vh', background: 'linear-gradient(135deg,#0d1242,#1a237e)', py: 6 }}>
       <Button startIcon={<ArrowBack />} onClick={() => navigate('/')} sx={{ position: 'absolute', top: 24, left: 24, color: 'rgba(255,255,255,0.8)' }}>
         Back
@@ -214,5 +225,6 @@ export default function Register() {
         </Card>
       </Container>
     </Box>
+    </>
   );
 }

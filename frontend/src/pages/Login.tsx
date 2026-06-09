@@ -8,6 +8,7 @@ import {
   Email, Lock, Visibility, VisibilityOff, Church,
   ArrowBack,
 } from '@mui/icons-material';
+import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import api from '../services/api';
@@ -60,6 +61,12 @@ export default function Login() {
   };
 
   return (
+    <>
+    <Helmet>
+      <title>Sign In | CMS-360 Church Management</title>
+      <meta name="description" content="Sign in to your CMS-360 church management account. Access your church dashboard, members, finance, and more." />
+      <meta name="robots" content="noindex, nofollow" />
+    </Helmet>
     <Box
       sx={{
         minHeight: '100vh',
@@ -214,5 +221,6 @@ export default function Login() {
         </Typography>
       </Container>
     </Box>
+    </>
   );
 }
