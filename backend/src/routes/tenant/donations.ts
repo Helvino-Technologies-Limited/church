@@ -13,6 +13,7 @@ const donationSchema = z.object({
   currency: z.string().default('KES'),
   paymentMethod: z.enum(['CASH', 'MPESA', 'AIRTEL_MONEY', 'BANK_TRANSFER', 'CHEQUE', 'CARD', 'OTHER']).default('CASH'),
   category: z.string().optional(),
+  fundCategoryId: z.string().uuid().optional().or(z.literal('')),
   description: z.string().optional(),
   receiptNo: z.string().optional(),
   donatedAt: z.string().optional(),
@@ -31,8 +32,13 @@ router.get('/', async (req: AuthRequest, res: Response, next: NextFunction) => {
     if (search) where.OR = [{ memberName: { contains: search, mode: 'insensitive' } }, { receiptNo: { contains: search } }];
     if (category) where.category = category;
 
+    if ((req.query.category as string)) where.category = req.query.category;
+
     const [donations, total, totals] = await Promise.all([
-      prisma.donation.findMany({ where, skip, take: limit, orderBy: { donatedAt: 'desc' } }),
+      prisma.donation.findMany({
+        where, skip, take: limit, orderBy: { donatedAt: 'desc' },
+        include: { fundCategory: { select: { id: true, name: true, color: true } } },
+      }),
       prisma.donation.count({ where }),
       prisma.donation.aggregate({ where, _sum: { amount: true } }),
     ]);
@@ -62,10 +68,12 @@ router.post('/', async (req: AuthRequest, res: Response, next: NextFunction) => 
         currency: data.currency,
         paymentMethod: data.paymentMethod,
         category: data.category,
+        fundCategoryId: data.fundCategoryId || null,
         description: data.description,
         receiptNo: data.receiptNo || `RCP-${Date.now().toString(36).toUpperCase()}`,
         donatedAt: data.donatedAt ? new Date(data.donatedAt) : new Date(),
       },
+      include: { fundCategory: { select: { id: true, name: true, color: true } } },
     });
 
     res.status(201).json({ success: true, data: donation });

@@ -38,12 +38,12 @@ router.patch('/church', async (req: AuthRequest, res: Response, next: NextFuncti
 router.patch('/preferences', async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const tenantId = req.tenantId!;
-    const { currency, fiscalYearStart, timezone, dateFormat, memberNoPrefix, employeeNoPrefix, receiptNoPrefix, primaryColor, secondaryColor } = req.body;
+    const { currency, fiscalYearStart, timezone, dateFormat, memberNoPrefix, employeeNoPrefix, receiptNoPrefix, primaryColor, secondaryColor, pastorName, pastorSignature } = req.body;
 
     const settings = await prisma.tenantSettings.upsert({
       where: { tenantId },
-      update: { currency, fiscalYearStart, timezone, dateFormat, memberNoPrefix, employeeNoPrefix, receiptNoPrefix, primaryColor, secondaryColor },
-      create: { tenantId, currency, fiscalYearStart, timezone, dateFormat, memberNoPrefix, employeeNoPrefix, receiptNoPrefix, primaryColor, secondaryColor },
+      update: { currency, fiscalYearStart, timezone, dateFormat, memberNoPrefix, employeeNoPrefix, receiptNoPrefix, primaryColor, secondaryColor, pastorName, pastorSignature },
+      create: { tenantId, currency, fiscalYearStart, timezone, dateFormat, memberNoPrefix, employeeNoPrefix, receiptNoPrefix, primaryColor, secondaryColor, pastorName, pastorSignature },
     });
     res.json({ success: true, data: settings });
   } catch (err) { next(err); }

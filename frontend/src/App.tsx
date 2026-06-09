@@ -36,6 +36,9 @@ import Attendance from './pages/tenant/Attendance';
 import Payroll from './pages/tenant/Payroll';
 import Reports from './pages/tenant/Reports';
 import Settings from './pages/tenant/Settings';
+import Visitors from './pages/tenant/Visitors';
+import Baptisms from './pages/tenant/Baptisms';
+import FundCategories from './pages/tenant/FundCategories';
 
 function PrivateRoute({ children, role }: { children: React.ReactNode; role?: string }) {
   const { isAuthenticated, user } = useSelector((s: RootState) => s.auth);
@@ -94,6 +97,9 @@ export default function App() {
           <Route path="payroll" element={<Payroll />} />
           <Route path="reports" element={<Reports />} />
           <Route path="settings" element={<Settings />} />
+          <Route path="visitors" element={<Visitors />} />
+          <Route path="baptisms" element={<Baptisms />} />
+          <Route path="fund-categories" element={<FundCategories />} />
         </Route>
 
         {/* Catch-all */}

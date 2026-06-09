@@ -20,6 +20,9 @@ import tenantPayrollRoutes from './tenant/payroll';
 import tenantReportsRoutes from './tenant/reports';
 import tenantSettingsRoutes from './tenant/settings';
 import tenantNotificationsRoutes from './tenant/notifications';
+import tenantVisitorsRoutes from './tenant/visitors';
+import tenantBaptismsRoutes from './tenant/baptisms';
+import tenantFundCategoriesRoutes from './tenant/fundCategories';
 
 const router = Router();
 
@@ -49,5 +52,8 @@ router.use('/tenant/payroll', ta, tenantPayrollRoutes);
 router.use('/tenant/reports', ta, tenantReportsRoutes);
 router.use('/tenant/settings', ta, tenantSettingsRoutes);
 router.use('/tenant/notifications', ta, tenantNotificationsRoutes);
+router.use('/tenant/visitors', ta, tenantVisitorsRoutes);
+router.use('/tenant/baptisms', ta, tenantBaptismsRoutes);
+router.use('/tenant/fund-categories', ta, tenantFundCategoriesRoutes);
 
 export default router;

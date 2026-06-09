@@ -6,7 +6,7 @@ import {
   CircularProgress, Tab, Tabs, FormControl, InputLabel, Select,
   MenuItem, Avatar, Divider, Pagination,
 } from '@mui/material';
-import { Save, Edit, Delete, Add, Visibility, VisibilityOff, AdminPanelSettings, History, Business } from '@mui/icons-material';
+import { Save, Edit, Delete, Add, Visibility, VisibilityOff, AdminPanelSettings, History, Business, Draw } from '@mui/icons-material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../../services/api';
 import { useSnackbar } from 'notistack';
@@ -33,6 +33,8 @@ export default function Settings() {
 
   const [profile, setProfile] = useState({ name: '', email: '', phone: '', country: '', city: '', state: '', address: '', website: '', description: '', type: '', registrationNo: '' });
   const [prefs, setPrefs] = useState({ currency: 'KES', timezone: 'Africa/Nairobi', dateFormat: 'DD/MM/YYYY', memberPrefix: 'MBR', employeePrefix: 'EMP' });
+  const [pastor, setPastor] = useState({ pastorName: '', pastorSignature: '' });
+  const [sigPreview, setSigPreview] = useState<string | null>(null);
   const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
   const [userForm, setUserForm] = useState({ fullName: '', email: '', phone: '', role: 'STAFF', password: '' });
   const [editUserId, setEditUserId] = useState<string | null>(null);
@@ -58,6 +60,8 @@ export default function Settings() {
       setProfile({ name: t.name || '', email: t.email || '', phone: t.phone || '', country: t.country || '', city: t.city || '', state: t.state || '', address: t.address || '', website: t.website || '', description: t.description || '', type: t.type || '', registrationNo: t.registrationNo || '' });
       const s = settingsData.settings || {};
       setPrefs({ currency: s.currency || 'KES', timezone: s.timezone || 'Africa/Nairobi', dateFormat: s.dateFormat || 'DD/MM/YYYY', memberPrefix: s.memberPrefix || 'MBR', employeePrefix: s.employeePrefix || 'EMP' });
+      setPastor({ pastorName: s.pastorName || '', pastorSignature: s.pastorSignature || '' });
+      if (s.pastorSignature) setSigPreview(s.pastorSignature);
     }
   }, [settingsData]);
 
@@ -68,10 +72,22 @@ export default function Settings() {
   });
 
   const savePrefsMutation = useMutation({
-    mutationFn: (body: typeof prefs) => api.patch('/tenant/settings/preferences', body),
-    onSuccess: () => enqueueSnackbar('Preferences saved', { variant: 'success' }),
+    mutationFn: (body: any) => api.patch('/tenant/settings/preferences', body),
+    onSuccess: () => { enqueueSnackbar('Preferences saved', { variant: 'success' }); queryClient.invalidateQueries({ queryKey: ['settings'] }); },
     onError: () => enqueueSnackbar('Failed to save preferences', { variant: 'error' }),
   });
+
+  const handleSigUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const b64 = reader.result as string;
+      setSigPreview(b64);
+      setPastor((p) => ({ ...p, pastorSignature: b64 }));
+    };
+    reader.readAsDataURL(file);
+  };
 
   const changePasswordMutation = useMutation({
     mutationFn: (body: typeof passwordForm) => api.post('/tenant/settings/change-password', body),
@@ -215,8 +231,35 @@ export default function Settings() {
               </Grid>
               <Grid item xs={6}><TextField fullWidth label="Member Prefix" value={prefs.memberPrefix} onChange={(e) => setPrefs((p) => ({ ...p, memberPrefix: e.target.value }))} size="small" helperText="e.g. MBR → MBR-001" /></Grid>
               <Grid item xs={6}><TextField fullWidth label="Employee Prefix" value={prefs.employeePrefix} onChange={(e) => setPrefs((p) => ({ ...p, employeePrefix: e.target.value }))} size="small" helperText="e.g. EMP → EMP-001" /></Grid>
+
+              {/* Pastor / Certificate settings */}
+              <Grid item xs={12}><Divider sx={{ my: 1 }}><Typography sx={{ fontSize: '0.78rem', color: 'text.secondary', px: 1 }}>BAPTISM CERTIFICATE SETTINGS</Typography></Divider></Grid>
               <Grid item xs={12}>
-                <Button variant="contained" startIcon={<Save />} onClick={() => savePrefsMutation.mutate(prefs)} disabled={savePrefsMutation.isPending}>
+                <TextField fullWidth label="Lead Pastor Name" value={pastor.pastorName}
+                  onChange={(e) => setPastor((p) => ({ ...p, pastorName: e.target.value }))}
+                  size="small" helperText="Appears on baptism certificates" />
+              </Grid>
+              <Grid item xs={12}>
+                <Typography sx={{ fontSize: '0.82rem', color: 'text.secondary', mb: 1 }}>Pastor Signature (PNG/JPG, transparent background recommended)</Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  {sigPreview ? (
+                    <Box sx={{ border: '1px solid #e0e0e0', borderRadius: 1, p: 1, bgcolor: '#fafafa' }}>
+                      <img src={sigPreview} alt="Signature preview" style={{ height: 50, maxWidth: 200, objectFit: 'contain' }} />
+                    </Box>
+                  ) : (
+                    <Box sx={{ border: '1px dashed #ccc', borderRadius: 1, p: 2, color: 'text.disabled', fontSize: '0.8rem' }}>
+                      No signature uploaded
+                    </Box>
+                  )}
+                  <Button variant="outlined" size="small" startIcon={<Draw />} component="label">
+                    Upload Signature
+                    <input type="file" accept="image/png,image/jpeg" hidden onChange={handleSigUpload} />
+                  </Button>
+                </Box>
+              </Grid>
+
+              <Grid item xs={12}>
+                <Button variant="contained" startIcon={<Save />} onClick={() => savePrefsMutation.mutate({ ...prefs, ...pastor })} disabled={savePrefsMutation.isPending}>
                   {savePrefsMutation.isPending ? <CircularProgress size={20} color="inherit" /> : 'Save Preferences'}
                 </Button>
               </Grid>

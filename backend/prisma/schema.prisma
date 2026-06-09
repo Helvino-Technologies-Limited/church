@@ -39,12 +39,14 @@ model Tenant {
   assets             Asset[]
   attendance         Attendance[]
   auditLogs          AuditLog[]
+  baptisms           Baptism[]
   budgets            Budget[]
   documents          Document[]
   donations          Donation[]
   employees          Employee[]
   events             Event[]
   expenses           Expense[]
+  fundCategories     FundCategory[]
   members            Member[]
   ministries         Ministry[]
   parishes           Parish[]
@@ -55,6 +57,7 @@ model Tenant {
   roles              TenantRole[]
   settings           TenantSettings?
   users              User[]
+  visitors           Visitor[]
 }
 
 model User {
@@ -101,6 +104,7 @@ model Member {
   notes         String?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
+  baptisms      Baptism[]
   donations     Donation[]
   ministry      Ministry?      @relation(fields: [ministryId], references: [id])
   parish        Parish?        @relation(fields: [parishId], references: [id])
@@ -167,21 +171,23 @@ model Ministry {
 }
 
 model Donation {
-  id            String        @id @default(uuid())
-  tenantId      String
-  memberId      String?
-  memberName    String?
-  amount        Decimal
-  currency      String        @default("KES")
-  paymentMethod PaymentMethod @default(CASH)
-  category      String?
-  description   String?
-  receiptNo     String?
-  donatedAt     DateTime      @default(now())
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  member        Member?       @relation(fields: [memberId], references: [id])
-  tenant        Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  id             String        @id @default(uuid())
+  tenantId       String
+  memberId       String?
+  memberName     String?
+  amount         Decimal
+  currency       String        @default("KES")
+  paymentMethod  PaymentMethod @default(CASH)
+  category       String?
+  fundCategoryId String?
+  description    String?
+  receiptNo      String?
+  donatedAt      DateTime      @default(now())
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  fundCategory   FundCategory? @relation(fields: [fundCategoryId], references: [id])
+  member         Member?       @relation(fields: [memberId], references: [id])
+  tenant         Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
 }
@@ -369,6 +375,8 @@ model TenantSettings {
   smtpUser         String?
   primaryColor     String   @default("#1a237e")
   secondaryColor   String   @default("#c8a415")
+  pastorName       String?
+  pastorSignature  String?
   updatedAt        DateTime @updatedAt
   tenant           Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 }
@@ -482,4 +490,78 @@ enum PaymentMethod {
   CHEQUE
   CARD
   OTHER
+}
+
+enum BaptismStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Visitor {
+  id                String    @id @default(uuid())
+  tenantId          String
+  fullname          String
+  phone             String?
+  email             String?
+  address           String?
+  gender            Gender?
+  ageGroup          String?
+  visitDate         DateTime  @default(now())
+  invitedBy         String?
+  howHeard          String?
+  purposeOfVisit    String?
+  notes             String?
+  followedUp        Boolean   @default(false)
+  followUpNote      String?
+  followUpDate      DateTime?
+  convertedToMember Boolean   @default(false)
+  memberId          String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  tenant            Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([visitDate])
+}
+
+model Baptism {
+  id             String        @id @default(uuid())
+  tenantId       String
+  memberId       String
+  certificateNo  String?
+  baptismDate    DateTime
+  baptismType    String        @default("WATER")
+  officiantName  String?
+  venue          String?
+  witnesses      String?
+  photo          String?
+  status         BaptismStatus @default(PENDING)
+  approvedById   String?
+  approvedAt     DateTime?
+  rejectedReason String?
+  notes          String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  member         Member        @relation(fields: [memberId], references: [id])
+  tenant         Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+}
+
+model FundCategory {
+  id           String     @id @default(uuid())
+  tenantId     String
+  name         String
+  description  String?
+  color        String?
+  targetAmount Decimal?
+  isActive     Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  donations    Donation[]
+  tenant       Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
 }

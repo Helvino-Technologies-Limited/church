@@ -9,7 +9,7 @@ import {
   Dashboard, People, AttachMoney, Work, Inventory, Church,
   Logout, Menu as MenuIcon, ChevronLeft, Notifications, NotificationsNone,
   Settings, Person, EventNote, AccountBalance, GroupWork,
-  Business, BarChart, HowToReg, Payments,
+  Business, BarChart, HowToReg, Payments, EmojiPeople, Waves, Savings,
 } from '@mui/icons-material';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -46,6 +46,8 @@ const NAV_SECTIONS = [
     title: 'CONGREGATION',
     items: [
       { label: 'Members', icon: <People />, path: '/members' },
+      { label: 'Visitors', icon: <EmojiPeople />, path: '/visitors' },
+      { label: 'Baptisms', icon: <Waves />, path: '/baptisms' },
       { label: 'Attendance', icon: <HowToReg />, path: '/attendance' },
       { label: 'Parishes / Branches', icon: <Business />, path: '/parishes' },
       { label: 'Ministries', icon: <GroupWork />, path: '/ministries' },
@@ -56,6 +58,7 @@ const NAV_SECTIONS = [
     title: 'FINANCE',
     items: [
       { label: 'Donations', icon: <AttachMoney />, path: '/donations' },
+      { label: 'Fund Categories', icon: <Savings />, path: '/fund-categories' },
       { label: 'Expenses', icon: <AccountBalance />, path: '/accounts' },
     ],
   },
