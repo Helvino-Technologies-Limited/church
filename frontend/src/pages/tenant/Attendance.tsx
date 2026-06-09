@@ -37,11 +37,12 @@ export default function Attendance() {
   const saveMutation = useMutation({
     mutationFn: (body: typeof form) => {
       const payload = {
-        ...body,
+        date: body.serviceDate,
+        serviceType: body.serviceType,
         adults: Number(body.adults) || 0,
         children: Number(body.children) || 0,
         visitors: Number(body.visitors) || 0,
-        totalPresent: (Number(body.adults) || 0) + (Number(body.children) || 0) + (Number(body.visitors) || 0),
+        notes: body.notes,
       };
       return editId ? api.put(`/tenant/attendance/${editId}`, payload) : api.post('/tenant/attendance', payload);
     },
@@ -62,7 +63,7 @@ export default function Attendance() {
   const set = (f: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setForm((p) => ({ ...p, [f]: e.target.value }));
 
   const handleEdit = (a: any) => {
-    setForm({ serviceDate: a.serviceDate ? a.serviceDate.split('T')[0] : '', serviceType: a.serviceType || 'Sunday Service', adults: String(a.adults || ''), children: String(a.children || ''), visitors: String(a.visitors || ''), notes: a.notes || '' });
+    setForm({ serviceDate: a.date ? a.date.split('T')[0] : '', serviceType: a.serviceType || 'Sunday Service', adults: String(a.adults || ''), children: String(a.children || ''), visitors: String(a.visitors || ''), notes: a.notes || '' });
     setEditId(a.id); setDrawerOpen(true); setAnchorEl(null);
   };
 
@@ -73,15 +74,15 @@ export default function Attendance() {
   const totalAdults = records.reduce((s: number, r: any) => s + (r.adults || 0), 0);
   const totalChildren = records.reduce((s: number, r: any) => s + (r.children || 0), 0);
   const totalVisitors = records.reduce((s: number, r: any) => s + (r.visitors || 0), 0);
-  const avgTotal = records.length > 0 ? Math.round(records.reduce((s: number, r: any) => s + (r.totalPresent || 0), 0) / records.length) : 0;
+  const avgTotal = records.length > 0 ? Math.round(records.reduce((s: number, r: any) => s + (r.total || 0), 0) / records.length) : 0;
 
   // Monthly trend from current page data
   const monthlyData = MONTHS.map((month, i) => {
     const monthRecords = records.filter((r: any) => {
-      const d = new Date(r.serviceDate);
+      const d = new Date(r.date);
       return d.getMonth() === i && d.getFullYear() === year;
     });
-    return { month, total: monthRecords.reduce((s: number, r: any) => s + (r.totalPresent || 0), 0) };
+    return { month, total: monthRecords.reduce((s: number, r: any) => s + (r.total || 0), 0) };
   });
 
   return (
@@ -156,12 +157,12 @@ export default function Attendance() {
                     <TableRow><TableCell colSpan={8} align="center" sx={{ py: 6, color: 'text.secondary' }}>No attendance records. Start recording services.</TableCell></TableRow>
                   ) : records.map((r: any) => (
                     <TableRow key={r.id} hover>
-                      <TableCell sx={{ fontSize: '0.85rem', fontWeight: 600 }}>{new Date(r.serviceDate).toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })}</TableCell>
+                      <TableCell sx={{ fontSize: '0.85rem', fontWeight: 600 }}>{new Date(r.date).toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' })}</TableCell>
                       <TableCell><Chip label={r.serviceType || 'Sunday Service'} size="small" sx={{ fontSize: '0.72rem', bgcolor: 'rgba(26,35,126,0.07)', color: '#1a237e' }} /></TableCell>
                       <TableCell sx={{ textAlign: 'right', fontSize: '0.85rem' }}>{r.adults || 0}</TableCell>
                       <TableCell sx={{ textAlign: 'right', fontSize: '0.85rem' }}>{r.children || 0}</TableCell>
                       <TableCell sx={{ textAlign: 'right', fontSize: '0.85rem', color: '#6a1b9a' }}>{r.visitors || 0}</TableCell>
-                      <TableCell sx={{ textAlign: 'right', fontSize: '0.85rem', fontWeight: 800, color: '#1a237e' }}>{r.totalPresent || 0}</TableCell>
+                      <TableCell sx={{ textAlign: 'right', fontSize: '0.85rem', fontWeight: 800, color: '#1a237e' }}>{r.total || 0}</TableCell>
                       <TableCell sx={{ fontSize: '0.78rem', color: 'text.secondary', maxWidth: 150 }}>{r.notes || '-'}</TableCell>
                       <TableCell align="center">
                         <IconButton size="small" onClick={(e) => { setAnchorEl(e.currentTarget); setSelected(r); }}><MoreVert fontSize="small" /></IconButton>
@@ -220,7 +221,7 @@ export default function Attendance() {
 
       <Dialog open={deleteDialog} onClose={() => setDeleteDialog(false)} maxWidth="xs" fullWidth>
         <DialogTitle>Delete Record</DialogTitle>
-        <DialogContent><Typography>Delete attendance record for <strong>{selected?.serviceDate ? new Date(selected.serviceDate).toLocaleDateString() : ''}</strong>?</Typography></DialogContent>
+        <DialogContent><Typography>Delete attendance record for <strong>{selected?.date ? new Date(selected.date).toLocaleDateString() : ''}</strong>?</Typography></DialogContent>
         <DialogActions>
           <Button onClick={() => setDeleteDialog(false)}>Cancel</Button>
           <Button variant="contained" color="error" onClick={() => deleteMutation.mutate(selected?.id)} disabled={deleteMutation.isPending}>Delete</Button>

@@ -36,12 +36,24 @@ router.get('/', async (req: AuthRequest, res: Response, next: NextFunction) => {
 
     const [totalTenants, totalMembers, totalUsers, totalDonations] = totalStats;
 
+    const toNum = (v: unknown) => typeof v === 'bigint' ? Number(v) : v;
+    const serializeGrowth = (arr: unknown[]) => (arr as any[]).map((r) => ({ month: toNum(r.month), count: toNum(r.count) }));
+
+    const startOfMonth = new Date(); startOfMonth.setDate(1); startOfMonth.setHours(0, 0, 0, 0);
+    const newThisMonth = await prisma.tenant.count({ where: { createdAt: { gte: startOfMonth } } });
+
     res.json({
       success: true,
       data: {
         year,
         kpis: { totalTenants, totalMembers, totalUsers, totalDonations: Number(totalDonations._sum.amount || 0) },
-        charts: { tenantGrowth, planDistribution, countryDistribution, statusBreakdown },
+        charts: {
+          tenantGrowth: serializeGrowth(tenantGrowth as unknown[]),
+          planDistribution,
+          countryDistribution,
+          statusBreakdown,
+        },
+        newThisMonth,
         recentActivity,
       },
     });
