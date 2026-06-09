@@ -41,20 +41,22 @@ export default function Analytics() {
 
   if (isLoading) return <Box sx={{ display: 'flex', justifyContent: 'center', pt: 8 }}><CircularProgress /></Box>;
 
-  const totalTenants = Number(data?.totalTenants || 0);
-  const activeTenants = Number(data?.activeTenants || 0);
-  const totalUsers = Number(data?.totalUsers || 0);
-  const newThisMonth = Number(data?.newThisMonth || 0);
+  const kpis = data?.kpis || {};
+  const charts = data?.charts || {};
+  const totalTenants = Number(kpis.totalTenants || 0);
+  const activeTenants = (charts.statusBreakdown || []).find((s: any) => s.status === 'ACTIVE')?._count || 0;
+  const totalUsers = Number(kpis.totalUsers || 0);
 
-  const planDistribution = Object.entries(data?.byPlan || {}).map(([name, value]) => ({ name, value: Number(value) }));
-  const statusDistribution = Object.entries(data?.byStatus || {}).map(([name, value]) => ({ name, value: Number(value) }));
+  const planDistribution = (charts.planDistribution || []).map((p: any) => ({ name: p.subscriptionPlan, value: p._count }));
+  const statusDistribution = (charts.statusBreakdown || []).map((s: any) => ({ name: s.status, value: s._count }));
 
   const monthlyGrowth = MONTHS.map((month, i) => {
-    const found = (data?.monthlyGrowth || []).find((d: any) => Number(d.month) === i + 1);
+    const found = (charts.tenantGrowth || []).find((d: any) => Number(d.month) === i + 1);
     return { month, tenants: found ? Number(found.count) : 0 };
   });
 
-  const countryData = (data?.byCountry || []).slice(0, 8);
+  const newThisMonth = monthlyGrowth.find((m) => m.month === MONTHS[new Date().getMonth()])?.tenants || 0;
+  const countryData = (charts.countryDistribution || []).slice(0, 8);
 
   return (
     <Box>
@@ -109,8 +111,8 @@ export default function Analytics() {
               {planDistribution.length > 0 ? (
                 <ResponsiveContainer width="100%" height={200}>
                   <PieChart>
-                    <Pie data={planDistribution} cx="50%" cy="50%" outerRadius={75} paddingAngle={3} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={false}>
-                      {planDistribution.map((e) => <Cell key={e.name} fill={PLAN_COLORS[e.name] || '#666'} />)}
+                    <Pie data={planDistribution} cx="50%" cy="50%" outerRadius={75} paddingAngle={3} dataKey="value" label={({ name, percent }: any) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={false}>
+                      {planDistribution.map((e: any) => <Cell key={e.name} fill={PLAN_COLORS[e.name] || '#666'} />)}
                     </Pie>
                     <Tooltip />
                   </PieChart>
@@ -133,7 +135,7 @@ export default function Analytics() {
                   <YAxis tick={{ fontSize: 10 }} allowDecimals={false} />
                   <Tooltip />
                   <Bar dataKey="value" name="Tenants" radius={[4, 4, 0, 0]}>
-                    {statusDistribution.map((e) => <Cell key={e.name} fill={STATUS_COLORS[e.name] || '#999'} />)}
+                    {statusDistribution.map((e: any) => <Cell key={e.name} fill={STATUS_COLORS[e.name] || '#999'} />)}
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
@@ -146,20 +148,23 @@ export default function Analytics() {
             <Card>
               <CardContent sx={{ p: 3 }}>
                 <Typography sx={{ fontWeight: 700, mb: 2 }}>Top Countries</Typography>
-                {countryData.map((c: any, i: number) => (
-                  <Box key={c.country || i} sx={{ mb: 1.2 }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.4 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8 }}>
-                        <Public sx={{ fontSize: 14, color: 'text.secondary' }} />
-                        <Typography sx={{ fontSize: '0.84rem' }}>{c.country || 'Unknown'}</Typography>
+                {countryData.map((c: any, i: number) => {
+                  const count = c._count?.country || c._count || 0;
+                  return (
+                    <Box key={c.country || i} sx={{ mb: 1.2 }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.4 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8 }}>
+                          <Public sx={{ fontSize: 14, color: 'text.secondary' }} />
+                          <Typography sx={{ fontSize: '0.84rem' }}>{c.country || 'Unknown'}</Typography>
+                        </Box>
+                        <Typography sx={{ fontSize: '0.84rem', fontWeight: 700 }}>{count}</Typography>
                       </Box>
-                      <Typography sx={{ fontSize: '0.84rem', fontWeight: 700 }}>{c._count}</Typography>
+                      <Box sx={{ height: 6, bgcolor: 'rgba(0,0,0,0.06)', borderRadius: 3 }}>
+                        <Box sx={{ height: '100%', bgcolor: '#1a237e', borderRadius: 3, width: `${Math.min(totalTenants > 0 ? (count / totalTenants) * 100 : 0, 100)}%` }} />
+                      </Box>
                     </Box>
-                    <Box sx={{ height: 6, bgcolor: 'rgba(0,0,0,0.06)', borderRadius: 3 }}>
-                      <Box sx={{ height: '100%', bgcolor: '#1a237e', borderRadius: 3, width: `${Math.min(totalTenants > 0 ? (c._count / totalTenants) * 100 : 0, 100)}%` }} />
-                    </Box>
-                  </Box>
-                ))}
+                  );
+                })}
               </CardContent>
             </Card>
           </Grid>

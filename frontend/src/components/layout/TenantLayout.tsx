@@ -8,7 +8,7 @@ import {
   Dashboard, People, AttachMoney, Work, Inventory, Church,
   Logout, Menu as MenuIcon, ChevronLeft, Notifications,
   Settings, Person, EventNote, AccountBalance, GroupWork,
-  Business, BarChart,
+  Business, BarChart, HowToReg, Payments,
 } from '@mui/icons-material';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -29,6 +29,7 @@ const NAV_SECTIONS = [
     title: 'CONGREGATION',
     items: [
       { label: 'Members', icon: <People />, path: '/members' },
+      { label: 'Attendance', icon: <HowToReg />, path: '/attendance' },
       { label: 'Parishes / Branches', icon: <Business />, path: '/parishes' },
       { label: 'Ministries', icon: <GroupWork />, path: '/ministries' },
       { label: 'Events', icon: <EventNote />, path: '/events' },
@@ -38,13 +39,14 @@ const NAV_SECTIONS = [
     title: 'FINANCE',
     items: [
       { label: 'Donations', icon: <AttachMoney />, path: '/donations' },
-      { label: 'Accounts', icon: <AccountBalance />, path: '/accounts' },
+      { label: 'Expenses', icon: <AccountBalance />, path: '/accounts' },
     ],
   },
   {
     title: 'ADMINISTRATION',
     items: [
       { label: 'Employees', icon: <Work />, path: '/employees' },
+      { label: 'Payroll', icon: <Payments />, path: '/payroll' },
       { label: 'Assets', icon: <Inventory />, path: '/assets' },
       { label: 'Settings', icon: <Settings />, path: '/settings' },
     ],

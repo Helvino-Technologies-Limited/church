@@ -5,6 +5,7 @@ import superAdminTenantsRoutes from './superadmin/tenants';
 import superAdminDashboardRoutes from './superadmin/dashboard';
 import superAdminAnalyticsRoutes from './superadmin/analytics';
 import superAdminSupportRoutes from './superadmin/support';
+import superAdminAuditLogsRoutes from './superadmin/auditLogs';
 import tenantDashboardRoutes from './tenant/dashboard';
 import tenantMembersRoutes from './tenant/members';
 import tenantDonationsRoutes from './tenant/donations';
@@ -29,6 +30,7 @@ router.use('/superadmin/tenants', sa, superAdminTenantsRoutes);
 router.use('/superadmin/dashboard', sa, superAdminDashboardRoutes);
 router.use('/superadmin/analytics', sa, superAdminAnalyticsRoutes);
 router.use('/superadmin/support', sa, superAdminSupportRoutes);
+router.use('/superadmin/audit-logs', sa, superAdminAuditLogsRoutes);
 
 // Tenant routes
 const ta = [authenticate];

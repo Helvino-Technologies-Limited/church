@@ -126,7 +126,7 @@ export default function Support() {
                     <TableRow><TableCell colSpan={7} align="center" sx={{ py: 6, color: 'text.secondary' }}>No support tickets found.</TableCell></TableRow>
                   ) : tickets.map((t: any) => (
                     <TableRow key={t.id} hover>
-                      <TableCell sx={{ fontFamily: 'monospace', fontSize: '0.8rem', color: '#1a237e' }}>#{t.ticketNo || t.id?.slice(0, 8)}</TableCell>
+                      <TableCell sx={{ fontFamily: 'monospace', fontSize: '0.8rem', color: '#1a237e' }}>#{t.id?.slice(0, 8).toUpperCase()}</TableCell>
                       <TableCell sx={{ fontSize: '0.83rem' }}>{t.tenant?.name || '-'}</TableCell>
                       <TableCell sx={{ fontSize: '0.875rem', fontWeight: 500, maxWidth: 220 }}>{t.subject}</TableCell>
                       <TableCell>
@@ -156,7 +156,7 @@ export default function Support() {
       {/* View & Reply Dialog */}
       <Dialog open={viewDialog} onClose={() => setViewDialog(false)} maxWidth="md" fullWidth>
         <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography sx={{ fontWeight: 700 }}>Ticket #{selected?.ticketNo || selected?.id?.slice(0, 8)}</Typography>
+          <Typography sx={{ fontWeight: 700 }}>Ticket #{selected?.id?.slice(0, 8).toUpperCase()}</Typography>
           <Chip label={selected?.status?.replace('_', ' ')} size="small" sx={{ bgcolor: STATUS_COLOR[selected?.status || 'OPEN']?.bg, color: STATUS_COLOR[selected?.status || 'OPEN']?.color, fontWeight: 600 }} />
         </DialogTitle>
         <DialogContent>
@@ -168,16 +168,14 @@ export default function Support() {
             <Typography sx={{ fontSize: '0.9rem', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>{selected?.message}</Typography>
           </Box>
 
-          {selected?.replies?.length > 0 && (
+          {selected?.response && (
             <>
               <Divider sx={{ mb: 2 }} />
-              <Typography sx={{ fontWeight: 600, mb: 1.5 }}>Replies</Typography>
-              {selected.replies.map((r: any, i: number) => (
-                <Box key={i} sx={{ p: 1.5, bgcolor: r.isAdmin ? 'rgba(26,35,126,0.05)' : 'rgba(0,0,0,0.03)', borderRadius: 2, mb: 1.5, borderLeft: r.isAdmin ? '3px solid #1a237e' : '3px solid #ddd' }}>
-                  <Typography sx={{ fontSize: '0.78rem', color: 'text.secondary', mb: 0.5 }}>{r.isAdmin ? 'SuperAdmin' : r.author} · {new Date(r.createdAt).toLocaleString()}</Typography>
-                  <Typography sx={{ fontSize: '0.88rem' }}>{r.message}</Typography>
-                </Box>
-              ))}
+              <Typography sx={{ fontWeight: 600, mb: 1.5 }}>Admin Response</Typography>
+              <Box sx={{ p: 1.5, bgcolor: 'rgba(26,35,126,0.05)', borderRadius: 2, mb: 1.5, borderLeft: '3px solid #1a237e' }}>
+                <Typography sx={{ fontSize: '0.78rem', color: 'text.secondary', mb: 0.5 }}>SuperAdmin</Typography>
+                <Typography sx={{ fontSize: '0.88rem' }}>{selected.response}</Typography>
+              </Box>
             </>
           )}
 

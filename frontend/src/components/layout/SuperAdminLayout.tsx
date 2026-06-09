@@ -80,7 +80,7 @@ export default function SuperAdminLayout() {
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 1.5, borderRadius: 2, bgcolor: 'rgba(26,35,126,0.06)' }}>
           <Avatar sx={{ width: 36, height: 36, bgcolor: '#b71c1c', fontSize: '0.85rem', fontWeight: 700 }}>SA</Avatar>
           <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Typography sx={{ fontWeight: 700, fontSize: '0.85rem', noWrap: true }}>{user?.fullname}</Typography>
+            <Typography sx={{ fontWeight: 700, fontSize: '0.85rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user?.fullname}</Typography>
             <Chip label="SuperAdmin" size="small" sx={{ bgcolor: '#b71c1c', color: 'white', fontSize: '0.65rem', height: 18, mt: 0.3 }} />
           </Box>
           <IconButton size="small" onClick={handleLogout} title="Logout">

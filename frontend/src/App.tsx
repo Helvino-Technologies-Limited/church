@@ -17,11 +17,25 @@ import TenantLayout from './components/layout/TenantLayout';
 import SuperAdminDashboard from './pages/superadmin/Dashboard';
 import Tenants from './pages/superadmin/Tenants';
 import TenantDetail from './pages/superadmin/TenantDetail';
+import Analytics from './pages/superadmin/Analytics';
+import Billing from './pages/superadmin/Billing';
+import AuditLogs from './pages/superadmin/AuditLogs';
+import Support from './pages/superadmin/Support';
 
 // Tenant pages
 import TenantDashboard from './pages/tenant/Dashboard';
 import Members from './pages/tenant/Members';
-import ComingSoon from './pages/tenant/ComingSoon';
+import Parishes from './pages/tenant/Parishes';
+import Ministries from './pages/tenant/Ministries';
+import Events from './pages/tenant/Events';
+import Donations from './pages/tenant/Donations';
+import Finance from './pages/tenant/Finance';
+import Employees from './pages/tenant/Employees';
+import Assets from './pages/tenant/Assets';
+import Attendance from './pages/tenant/Attendance';
+import Payroll from './pages/tenant/Payroll';
+import Reports from './pages/tenant/Reports';
+import Settings from './pages/tenant/Settings';
 
 function PrivateRoute({ children, role }: { children: React.ReactNode; role?: string }) {
   const { isAuthenticated, user } = useSelector((s: RootState) => s.auth);
@@ -59,26 +73,27 @@ export default function App() {
           <Route path="dashboard" element={<SuperAdminDashboard />} />
           <Route path="tenants" element={<Tenants />} />
           <Route path="tenants/:id" element={<TenantDetail />} />
-          <Route path="analytics" element={<ComingSoon title="Analytics" description="Advanced platform analytics, revenue tracking, and growth metrics." />} />
-          <Route path="billing" element={<ComingSoon title="Billing" description="Subscription billing, invoices, and payment management." />} />
-          <Route path="audit-logs" element={<ComingSoon title="Audit Logs" description="Platform-wide audit trail for all actions." />} />
-          <Route path="support" element={<ComingSoon title="Support" description="Tenant support tickets and assistance." />} />
-          <Route path="settings" element={<ComingSoon title="Platform Settings" description="Global platform configuration and settings." />} />
+          <Route path="analytics" element={<Analytics />} />
+          <Route path="billing" element={<Billing />} />
+          <Route path="audit-logs" element={<AuditLogs />} />
+          <Route path="support" element={<Support />} />
         </Route>
 
         {/* Tenant */}
         <Route path="/" element={<TenantRoute><TenantLayout /></TenantRoute>}>
           <Route path="dashboard" element={<TenantDashboard />} />
           <Route path="members" element={<Members />} />
-          <Route path="parishes" element={<ComingSoon title="Parishes & Branches" description="Manage church branches, parishes, and their members." />} />
-          <Route path="ministries" element={<ComingSoon title="Ministries" description="Manage church ministries and their members." />} />
-          <Route path="events" element={<ComingSoon title="Events" description="Church events, services, and calendar management." />} />
-          <Route path="donations" element={<ComingSoon title="Donations" description="Track tithes, offerings, and all financial contributions." />} />
-          <Route path="accounts" element={<ComingSoon title="Chart of Accounts" description="Full double-entry bookkeeping and financial accounts." />} />
-          <Route path="employees" element={<ComingSoon title="Employees" description="Staff management, HR, and payroll." />} />
-          <Route path="assets" element={<ComingSoon title="Assets" description="Church property, equipment, and asset tracking." />} />
-          <Route path="reports" element={<ComingSoon title="Reports" description="Comprehensive church reports and analytics." />} />
-          <Route path="settings" element={<ComingSoon title="Settings" description="Church configuration, users, roles, and preferences." />} />
+          <Route path="parishes" element={<Parishes />} />
+          <Route path="ministries" element={<Ministries />} />
+          <Route path="events" element={<Events />} />
+          <Route path="donations" element={<Donations />} />
+          <Route path="accounts" element={<Finance />} />
+          <Route path="employees" element={<Employees />} />
+          <Route path="assets" element={<Assets />} />
+          <Route path="attendance" element={<Attendance />} />
+          <Route path="payroll" element={<Payroll />} />
+          <Route path="reports" element={<Reports />} />
+          <Route path="settings" element={<Settings />} />
         </Route>
 
         {/* Catch-all */}

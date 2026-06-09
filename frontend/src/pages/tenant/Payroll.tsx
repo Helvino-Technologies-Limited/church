@@ -18,7 +18,7 @@ const STATUS_COLOR: Record<string, { bg: string; color: string }> = {
   PAID: { bg: 'rgba(46,125,50,0.12)', color: '#2e7d32' },
   CANCELLED: { bg: 'rgba(198,40,40,0.1)', color: '#c62828' },
 };
-const emptyForm = { employeeId: '', periodStart: '', periodEnd: '', basicSalary: '', allowances: '', deductions: '', paymentMethod: 'BANK_TRANSFER', notes: '' };
+const emptyForm = { employeeId: '', period: '', basicSalary: '', allowances: '', deductions: '', paymentMethod: 'BANK_TRANSFER', notes: '' };
 
 export default function Payroll() {
   const queryClient = useQueryClient();
@@ -47,7 +47,7 @@ export default function Payroll() {
       const basic = Number(body.basicSalary) || 0;
       const allowances = Number(body.allowances) || 0;
       const deductions = Number(body.deductions) || 0;
-      const payload = { ...body, basicSalary: basic, allowances, deductions, netPay: basic + allowances - deductions };
+      const payload = { employeeId: body.employeeId, period: body.period, basicSalary: basic, allowances, deductions, netPay: basic + allowances - deductions, paymentMethod: body.paymentMethod, notes: body.notes };
       return editId ? api.put(`/tenant/payroll/${editId}`, payload) : api.post('/tenant/payroll', payload);
     },
     onSuccess: () => {
@@ -73,7 +73,7 @@ export default function Payroll() {
   const set = (f: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setForm((p) => ({ ...p, [f]: e.target.value }));
 
   const handleEdit = (p: any) => {
-    setForm({ employeeId: p.employeeId || '', periodStart: p.periodStart ? p.periodStart.split('T')[0] : '', periodEnd: p.periodEnd ? p.periodEnd.split('T')[0] : '', basicSalary: String(p.basicSalary || ''), allowances: String(p.allowances || ''), deductions: String(p.deductions || ''), paymentMethod: p.paymentMethod || 'BANK_TRANSFER', notes: p.notes || '' });
+    setForm({ employeeId: p.employeeId || '', period: p.period || '', basicSalary: String(p.basicSalary || ''), allowances: String(p.allowances || ''), deductions: String(p.deductions || ''), paymentMethod: p.paymentMethod || 'BANK_TRANSFER', notes: p.notes || '' });
     setEditId(p.id); setDrawerOpen(true); setAnchorEl(null);
   };
 
@@ -157,13 +157,10 @@ export default function Payroll() {
                   ) : records.map((r: any) => (
                     <TableRow key={r.id} hover>
                       <TableCell>
-                        <Typography sx={{ fontSize: '0.875rem', fontWeight: 600 }}>{r.employee?.fullName || r.employee?.firstName || '-'}</Typography>
+                        <Typography sx={{ fontSize: '0.875rem', fontWeight: 600 }}>{r.employee?.fullname || r.employee?.fullName || r.employee?.firstName || '-'}</Typography>
                         <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>{r.employee?.department || ''}</Typography>
                       </TableCell>
-                      <TableCell sx={{ fontSize: '0.8rem' }}>
-                        {r.periodStart ? new Date(r.periodStart).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }) : '-'}
-                        {r.periodEnd ? ` – ${new Date(r.periodEnd).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}` : ''}
-                      </TableCell>
+                      <TableCell sx={{ fontSize: '0.8rem' }}>{r.period || '-'}</TableCell>
                       <TableCell sx={{ textAlign: 'right', fontSize: '0.83rem' }}>{Number(r.basicSalary || 0).toLocaleString()}</TableCell>
                       <TableCell sx={{ textAlign: 'right', fontSize: '0.83rem', color: '#2e7d32' }}>+{Number(r.allowances || 0).toLocaleString()}</TableCell>
                       <TableCell sx={{ textAlign: 'right', fontSize: '0.83rem', color: '#c62828' }}>-{Number(r.deductions || 0).toLocaleString()}</TableCell>
@@ -202,12 +199,11 @@ export default function Payroll() {
             <FormControl fullWidth size="small">
               <InputLabel>Employee *</InputLabel>
               <Select value={form.employeeId} label="Employee *" onChange={(e) => setForm((f) => ({ ...f, employeeId: e.target.value }))}>
-                {employees.map((e: any) => <MenuItem key={e.id} value={e.id}>{e.fullName || `${e.firstName} ${e.lastName}`} — {e.department}</MenuItem>)}
+                {employees.map((e: any) => <MenuItem key={e.id} value={e.id}>{e.fullname || e.fullName || e.firstName || e.email} — {e.department}</MenuItem>)}
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={6}><TextField fullWidth label="Period Start *" type="date" value={form.periodStart} onChange={set('periodStart')} size="small" InputLabelProps={{ shrink: true }} /></Grid>
-          <Grid item xs={6}><TextField fullWidth label="Period End *" type="date" value={form.periodEnd} onChange={set('periodEnd')} size="small" InputLabelProps={{ shrink: true }} /></Grid>
+          <Grid item xs={12}><TextField fullWidth label="Period *" value={form.period} onChange={set('period')} size="small" placeholder="e.g. January 2024 or 2024-01" /></Grid>
           <Grid item xs={12}><TextField fullWidth label="Basic Salary (KES) *" type="number" value={form.basicSalary} onChange={set('basicSalary')} size="small" /></Grid>
           <Grid item xs={6}><TextField fullWidth label="Allowances (KES)" type="number" value={form.allowances} onChange={set('allowances')} size="small" /></Grid>
           <Grid item xs={6}><TextField fullWidth label="Deductions (KES)" type="number" value={form.deductions} onChange={set('deductions')} size="small" /></Grid>
@@ -231,7 +227,7 @@ export default function Payroll() {
         </Grid>
         <Box sx={{ display: 'flex', gap: 2, mt: 4 }}>
           <Button variant="outlined" fullWidth onClick={() => setDrawerOpen(false)}>Cancel</Button>
-          <Button variant="contained" fullWidth onClick={() => saveMutation.mutate(form)} disabled={saveMutation.isPending || !form.employeeId || !form.basicSalary}>
+          <Button variant="contained" fullWidth onClick={() => saveMutation.mutate(form)} disabled={saveMutation.isPending || !form.employeeId || !form.basicSalary || !form.period}>
             {saveMutation.isPending ? <CircularProgress size={20} color="inherit" /> : (editId ? 'Update' : 'Create')}
           </Button>
         </Box>
@@ -239,7 +235,7 @@ export default function Payroll() {
 
       <Dialog open={deleteDialog} onClose={() => setDeleteDialog(false)} maxWidth="xs" fullWidth>
         <DialogTitle>Delete Payroll</DialogTitle>
-        <DialogContent><Typography>Delete payroll record for <strong>{selected?.employee?.fullName || selected?.employee?.firstName}</strong>?</Typography></DialogContent>
+        <DialogContent><Typography>Delete payroll record for <strong>{selected?.employee?.fullname || selected?.employee?.fullName || selected?.employee?.firstName}</strong>?</Typography></DialogContent>
         <DialogActions>
           <Button onClick={() => setDeleteDialog(false)}>Cancel</Button>
           <Button variant="contained" color="error" onClick={() => deleteMutation.mutate(selected?.id)} disabled={deleteMutation.isPending}>Delete</Button>
