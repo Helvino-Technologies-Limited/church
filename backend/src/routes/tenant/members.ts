@@ -1,5 +1,6 @@
 import { Router, Response, NextFunction } from 'express';
 import { z } from 'zod';
+import { Gender, MaritalStatus } from '@prisma/client';
 import prisma from '../../config/database';
 import { AuthRequest } from '../../types';
 import { AppError } from '../../middleware/errorHandler';
@@ -11,9 +12,9 @@ const memberSchema = z.object({
   fullname: z.string().min(2),
   email: z.string().email().optional().or(z.literal('')),
   phone: z.string().optional(),
-  gender: z.enum(['MALE', 'FEMALE', 'OTHER']).optional(),
+  gender: z.enum(['MALE', 'FEMALE', 'OTHER']).optional().or(z.literal('')),
   dateOfBirth: z.string().optional(),
-  maritalStatus: z.enum(['SINGLE', 'MARRIED', 'DIVORCED', 'WIDOWED']).optional(),
+  maritalStatus: z.enum(['SINGLE', 'MARRIED', 'DIVORCED', 'WIDOWED']).optional().or(z.literal('')),
   address: z.string().optional(),
   city: z.string().optional(),
   occupation: z.string().optional(),
@@ -111,9 +112,9 @@ router.post('/', async (req: AuthRequest, res: Response, next: NextFunction) => 
         fullname: data.fullname,
         email: data.email || null,
         phone: data.phone,
-        gender: data.gender,
+        gender: data.gender ? data.gender as Gender : undefined,
         dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : null,
-        maritalStatus: data.maritalStatus,
+        maritalStatus: data.maritalStatus ? data.maritalStatus as MaritalStatus : undefined,
         address: data.address,
         city: data.city,
         occupation: data.occupation,
@@ -155,6 +156,8 @@ router.put('/:id', async (req: AuthRequest, res: Response, next: NextFunction) =
       data: {
         ...data,
         email: data.email || null,
+        gender: data.gender ? data.gender as Gender : undefined,
+        maritalStatus: data.maritalStatus ? data.maritalStatus as MaritalStatus : undefined,
         parishId: data.parishId || null,
         ministryId: data.ministryId || null,
         dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : undefined,

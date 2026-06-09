@@ -212,7 +212,7 @@ export default function Members() {
               <InputLabel>Gender</InputLabel>
               <Select value={form.gender} label="Gender" onChange={(e) => setForm((f) => ({ ...f, gender: e.target.value }))}>
                 <MenuItem value="">Select</MenuItem>
-                {['MALE', 'FEMALE', 'OTHER'].map((g) => <MenuItem key={g} value={g}>{g}</MenuItem>)}
+                {['MALE', 'FEMALE'].map((g) => <MenuItem key={g} value={g}>{g}</MenuItem>)}
               </Select>
             </FormControl>
           </Grid>

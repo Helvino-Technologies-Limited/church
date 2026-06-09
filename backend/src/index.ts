@@ -10,6 +10,9 @@ import { errorHandler } from './middleware/errorHandler';
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Trust proxy — required for express-rate-limit behind Render/reverse proxies
+app.set('trust proxy', 1);
+
 // Security middleware
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 app.use(cors({
