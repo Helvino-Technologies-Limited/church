@@ -66,10 +66,14 @@ app.use((_req, res) => {
 // Global error handler
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  console.log(`\n🚀 CMS-360 API running on port ${PORT}`);
-  console.log(`   Health: http://localhost:${PORT}/health`);
-  console.log(`   Environment: ${process.env.NODE_ENV}\n`);
-});
+// Only bind to a port when run directly (local dev / Render).
+// On Vercel, this module is imported by api/index.ts and invoked per-request instead.
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`\n🚀 CMS-360 API running on port ${PORT}`);
+    console.log(`   Health: http://localhost:${PORT}/health`);
+    console.log(`   Environment: ${process.env.NODE_ENV}\n`);
+  });
+}
 
 export default app;
