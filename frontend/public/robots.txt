@@ -1,26 +1,12 @@
 User-agent: *
-Allow: /
-Allow: /login
+Allow: /$
 Allow: /register
+Allow: /login
+Allow: /assets/
+Allow: /*.png$
+Allow: /*.ico$
+Allow: /*.svg$
+Allow: /manifest.webmanifest
+Disallow: /
 
-# Block authenticated app routes — not useful to search engines
-Disallow: /dashboard
-Disallow: /members
-Disallow: /finance
-Disallow: /reports
-Disallow: /attendance
-Disallow: /payroll
-Disallow: /donations
-Disallow: /settings
-Disallow: /parishes
-Disallow: /ministries
-Disallow: /employees
-Disallow: /assets
-Disallow: /support
-Disallow: /superadmin/
-
-# Crawl delay for polite bots
-Crawl-delay: 10
-
-# Sitemap
-Sitemap: https://churchmanager-one.vercel.app/sitemap.xml
+Sitemap: https://church.helvino.org/sitemap.xml

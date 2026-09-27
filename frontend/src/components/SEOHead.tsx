@@ -1,4 +1,5 @@
 import { Helmet } from 'react-helmet-async';
+import { SITE_URL } from '../lib/site';
 
 interface SEOHeadProps {
   title?: string;
@@ -9,12 +10,12 @@ interface SEOHeadProps {
   noIndex?: boolean;
 }
 
-const BASE_URL = 'https://churchmanager-one.vercel.app';
-const DEFAULT_IMAGE = 'https://images.unsplash.com/photo-1519692933481-e162a57d6721?auto=format&fit=crop&w=1200&q=80';
+const BASE_URL = SITE_URL;
+const DEFAULT_IMAGE = `${SITE_URL}/og-image.png`;
 const SITE_NAME = 'CMS-360';
 
 export default function SEOHead({ title, description, keywords, image, url, noIndex = false }: SEOHeadProps) {
-  const fullTitle = title ? `${title} | CMS-360` : 'CMS-360 | Church Management Software — Kenya';
+  const fullTitle = title ? `${title} | CMS-360` : 'CMS-360 | Church Management Software in Kenya';
   const metaDescription = description || 'Cloud-based church management platform for Kenya. Manage members, attendance, donations, payroll and finance in one system.';
   const metaImage = image || DEFAULT_IMAGE;
   const metaUrl = url ? `${BASE_URL}${url}` : BASE_URL;

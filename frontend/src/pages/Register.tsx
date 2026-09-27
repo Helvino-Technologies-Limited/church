@@ -85,7 +85,7 @@ export default function Register() {
             <CheckCircle sx={{ fontSize: 72, color: '#2e7d32', mb: 2 }} />
             <Typography variant="h4" sx={{ fontWeight: 800, color: '#1a237e', mb: 2 }}>Registration Successful!</Typography>
             <Typography sx={{ color: 'text.secondary', mb: 3, lineHeight: 1.8 }}>
-              <strong>{form.churchName}</strong> has been registered successfully! Your 30-day free trial has started. You can now log in with your administrator credentials.
+              <strong>{form.churchName}</strong> has been registered successfully! Your 5-day free trial has started. You can now log in with your administrator credentials.
             </Typography>
             <Typography sx={{ color: 'text.secondary', fontSize: '0.9rem', mb: 1 }}>Login Email: <strong>{form.adminEmail}</strong></Typography>
             <Button variant="contained" size="large" onClick={() => navigate('/login')} sx={{ mt: 3, px: 5, py: 1.5, fontWeight: 700 }} endIcon={<ArrowForward />}>
@@ -103,10 +103,10 @@ export default function Register() {
       <title>Register Your Church — Free Trial | CMS-360</title>
       <meta name="description" content="Start your free trial of CMS-360. Register your church and manage members, attendance, donations, payroll and finance with Kenya's leading church management software." />
       <meta name="keywords" content="register church management software Kenya, church management free trial, church software signup" />
-      <link rel="canonical" href="https://churchmanager-one.vercel.app/register" />
+      <link rel="canonical" href="https://church.helvino.org/register" />
       <meta property="og:title" content="Register Your Church — Free Trial | CMS-360" />
       <meta property="og:description" content="Start your free trial of CMS-360. Kenya's leading church management platform." />
-      <meta property="og:url" content="https://churchmanager-one.vercel.app/register" />
+      <meta property="og:url" content="https://church.helvino.org/register" />
     </Helmet>
     <Box sx={{ minHeight: '100vh', background: 'linear-gradient(135deg,#0d1242,#1a237e)', py: 6 }}>
       <Button startIcon={<ArrowBack />} onClick={() => navigate('/')} sx={{ position: 'absolute', top: 24, left: 24, color: 'rgba(255,255,255,0.8)' }}>
@@ -119,7 +119,7 @@ export default function Register() {
             <Church sx={{ color: '#1a237e', fontSize: 28 }} />
           </Box>
           <Typography variant="h4" sx={{ color: 'white', fontWeight: 800, fontFamily: "'Playfair Display', serif" }}>Register Your Church</Typography>
-          <Typography sx={{ color: 'rgba(255,255,255,0.7)', mt: 1 }}>30-Day Free Trial — No credit card required</Typography>
+          <Typography sx={{ color: 'rgba(255,255,255,0.7)', mt: 1 }}>5-Day Free Trial — No credit card required</Typography>
         </Box>
 
         <Paper sx={{ p: { xs: 2, md: 4 }, background: 'rgba(255,255,255,0.06)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 3, mb: 3 }}>
@@ -202,7 +202,7 @@ export default function Register() {
                   </Grid>
                 </RadioGroup>
                 <Alert severity="info" sx={{ mt: 3, borderRadius: 2 }}>
-                  <strong>30-Day Free Trial</strong> — Start with any plan. No payment required during the trial period. You can upgrade or downgrade anytime.
+                  <strong>5-Day Free Trial</strong> — Full access with no payment required during the trial period.
                 </Alert>
               </Box>
             )}

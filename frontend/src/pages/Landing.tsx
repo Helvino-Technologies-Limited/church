@@ -11,55 +11,80 @@ import {
 } from '@mui/icons-material';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
+import { SITE_URL, FAQS } from '../lib/site';
 
-const JSON_LD_ORGANIZATION = {
-  '@context': 'https://schema.org',
-  '@type': 'Organization',
-  name: 'Helvino Technologies LTD',
-  url: 'https://churchmanager-one.vercel.app',
-  logo: 'https://churchmanager-one.vercel.app/favicon.svg',
-  contactPoint: {
-    '@type': 'ContactPoint',
-    telephone: '+254-110-421-320',
-    contactType: 'customer support',
-    areaServed: 'KE',
-    availableLanguage: 'English',
-  },
-  sameAs: [],
-};
+const ORG_ID = 'https://helvino.org/#organization';
 
-const JSON_LD_SOFTWARE = {
+const JSON_LD = {
   '@context': 'https://schema.org',
-  '@type': 'SoftwareApplication',
-  name: 'CMS-360',
-  alternateName: 'Church Management System 360',
-  applicationCategory: 'BusinessApplication',
-  operatingSystem: 'Web',
-  url: 'https://churchmanager-one.vercel.app',
-  description: 'CMS-360 is a cloud-based, multi-tenant church management platform for Kenyan churches. Manage members, attendance, donations, payroll, and finance — all in one system.',
-  offers: [
-    { '@type': 'Offer', name: 'Starter', price: '1500', priceCurrency: 'KES', billingIncrement: 'P1M' },
-    { '@type': 'Offer', name: 'Standard', price: '3500', priceCurrency: 'KES', billingIncrement: 'P1M' },
-    { '@type': 'Offer', name: 'Professional', price: '7500', priceCurrency: 'KES', billingIncrement: 'P1M' },
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': ORG_ID,
+      name: 'Helvino Technologies LTD',
+      url: 'https://helvino.org/',
+      logo: `${SITE_URL}/icon-512.png`,
+      email: 'info@helvino.org',
+      telephone: '+254110421320',
+      address: { '@type': 'PostalAddress', addressCountry: 'KE' },
+      contactPoint: {
+        '@type': 'ContactPoint',
+        telephone: '+254110421320',
+        email: 'info@helvino.org',
+        contactType: 'customer support',
+        areaServed: 'KE',
+        availableLanguage: ['English', 'Swahili'],
+      },
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${SITE_URL}/#website`,
+      url: `${SITE_URL}/`,
+      name: 'CMS-360',
+      inLanguage: 'en-KE',
+      publisher: { '@id': ORG_ID },
+    },
+    {
+      '@type': 'SoftwareApplication',
+      '@id': `${SITE_URL}/#software`,
+      name: 'CMS-360',
+      alternateName: 'Church Management System 360',
+      url: `${SITE_URL}/`,
+      image: `${SITE_URL}/og-image.png`,
+      applicationCategory: 'BusinessApplication',
+      applicationSubCategory: 'Church Management',
+      operatingSystem: 'Web browser (Windows, macOS, Android, iOS)',
+      description:
+        'Cloud church management software for churches, parishes and dioceses in Kenya: members, attendance, visitors, baptisms, ministries, events, tithes and offerings, church accounts, assets, staff and payroll.',
+      featureList: [
+        'Member profiles, families and spiritual milestones',
+        'Attendance, visitors and baptisms',
+        'Ministries and events',
+        'Tithes, offerings, pledges and fund categories with receipts',
+        'Church accounts and asset register',
+        'Employees and payroll',
+        'Multi-branch, parish and diocese management',
+        'Reports, dashboards and audit trail',
+      ],
+      areaServed: 'KE',
+      inLanguage: 'en-KE',
+      offers: [
+        { '@type': 'Offer', name: '5-day free trial', price: '0', priceCurrency: 'KES' },
+        { '@type': 'Offer', name: 'First year', price: '50000', priceCurrency: 'KES' },
+        { '@type': 'Offer', name: 'Annual renewal', price: '20000', priceCurrency: 'KES' },
+      ],
+      publisher: { '@id': ORG_ID },
+    },
+    {
+      '@type': 'FAQPage',
+      '@id': `${SITE_URL}/#faq`,
+      mainEntity: FAQS.map(({ q, a }) => ({
+        '@type': 'Question',
+        name: q,
+        acceptedAnswer: { '@type': 'Answer', text: a },
+      })),
+    },
   ],
-  author: { '@type': 'Organization', name: 'Helvino Technologies LTD' },
-  inLanguage: 'en-KE',
-  keywords: 'church management software Kenya, parish management, tithe tracking, church attendance',
-};
-
-const JSON_LD_WEBPAGE = {
-  '@context': 'https://schema.org',
-  '@type': 'WebPage',
-  name: 'CMS-360 — Church Management Software for Kenya',
-  description: 'Cloud-based church management platform. Manage members, attendance, donations, payroll and finance in one system.',
-  url: 'https://churchmanager-one.vercel.app',
-  inLanguage: 'en-KE',
-  publisher: { '@type': 'Organization', name: 'Helvino Technologies LTD' },
-  potentialAction: {
-    '@type': 'RegisterAction',
-    target: 'https://churchmanager-one.vercel.app/register',
-    name: 'Start Free Trial',
-  },
 };
 
 const BIBLE_VERSES = [
@@ -158,15 +183,13 @@ export default function Landing() {
     <Box>
       {/* ── SEO ─────────────────────────────────── */}
       <Helmet>
-        <title>CMS-360 | Church Management Software — Kenya</title>
-        <meta name="description" content="CMS-360 is a cloud-based church management platform for Kenyan churches. Manage members, attendance, donations, payroll, and finance — all in one system. Free trial available." />
+        <title>CMS-360 | Church Management Software in Kenya</title>
+        <meta name="description" content="CMS-360 is church management software for Kenya. Manage members, attendance, visitors, baptisms, tithes and offerings, church accounts and payroll in one secure cloud system. Free 5-day trial." />
         <meta name="keywords" content="church management software Kenya, church management system, church member management, church attendance tracking, church finance software, parish management, tithe tracking, church ERP, diocese management, CMS-360, Helvino Technologies" />
-        <link rel="canonical" href="https://churchmanager-one.vercel.app/" />
-        <meta property="og:url" content="https://churchmanager-one.vercel.app/" />
+        <link rel="canonical" href="https://church.helvino.org/" />
+        <meta property="og:url" content="https://church.helvino.org/" />
         <meta property="og:type" content="website" />
-        <script type="application/ld+json">{JSON.stringify(JSON_LD_ORGANIZATION)}</script>
-        <script type="application/ld+json">{JSON.stringify(JSON_LD_SOFTWARE)}</script>
-        <script type="application/ld+json">{JSON.stringify(JSON_LD_WEBPAGE)}</script>
+        <script type="application/ld+json">{JSON.stringify(JSON_LD)}</script>
       </Helmet>
 
       {/* ── Navbar ──────────────────────────────── */}
@@ -602,6 +625,27 @@ export default function Landing() {
       </Box>
 
       {/* ── Contact / Footer ─────────────────────── */}
+      {/* ── FAQ ─────────────────────────────────── */}
+      <Box id="faq" sx={{ py: 12, bgcolor: 'white' }}>
+        <Container maxWidth="md">
+          <Typography variant="h2" sx={{ fontSize: { xs: '2rem', md: '2.6rem' }, fontWeight: 800, color: '#1a237e', textAlign: 'center', mb: 5 }}>
+            Frequently Asked Questions
+          </Typography>
+          {FAQS.map(({ q, a }) => (
+            <Box
+              key={q}
+              component="details"
+              sx={{ bgcolor: '#f8f9ff', border: '1px solid rgba(26,35,126,0.1)', borderRadius: 3, p: 2.5, mb: 1.5, '& summary': { cursor: 'pointer', listStyle: 'revert' } }}
+            >
+              <Box component="summary">
+                <Typography component="h3" sx={{ display: 'inline', fontWeight: 700, fontSize: '1.05rem', color: '#1a237e' }}>{q}</Typography>
+              </Box>
+              <Typography sx={{ mt: 1.5, color: 'text.secondary', lineHeight: 1.7 }}>{a}</Typography>
+            </Box>
+          ))}
+        </Container>
+      </Box>
+
       <Box id="contact" sx={{ bgcolor: '#0d1242', py: 10, color: 'white' }}>
         <Container maxWidth="lg">
           <Grid container spacing={6}>

@@ -8,6 +8,7 @@ import { restoreUser } from './store/slices/authSlice';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import { Helmet } from 'react-helmet-async';
 
 // Layouts
 import SuperAdminLayout from './components/layout/SuperAdminLayout';
@@ -44,14 +45,14 @@ function PrivateRoute({ children, role }: { children: React.ReactNode; role?: st
   const { isAuthenticated, user } = useSelector((s: RootState) => s.auth);
   if (!isAuthenticated) return <Navigate to="/login" replace />;
   if (role && user?.role !== role) return <Navigate to="/login" replace />;
-  return <>{children}</>;
+  return <><Helmet><meta name="robots" content="noindex, nofollow" /></Helmet>{children}</>;
 }
 
 function TenantRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, user } = useSelector((s: RootState) => s.auth);
   if (!isAuthenticated) return <Navigate to="/login" replace />;
   if (user?.role === 'SUPERADMIN') return <Navigate to="/superadmin/dashboard" replace />;
-  return <>{children}</>;
+  return <><Helmet><meta name="robots" content="noindex, nofollow" /></Helmet>{children}</>;
 }
 
 export default function App() {
