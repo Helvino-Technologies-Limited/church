@@ -302,7 +302,7 @@ export default function Landing() {
                   onClick={() => navigate('/register')}
                   sx={{ background: 'linear-gradient(135deg,#c8a415,#fdd54f)', color: '#000', fontWeight: 800, fontSize: '1rem', px: 4, py: 1.5 }}
                 >
-                  Start Free 30-Day Trial
+                  Start Free 5-Day Trial
                 </Button>
                 <Button
                   variant="outlined"

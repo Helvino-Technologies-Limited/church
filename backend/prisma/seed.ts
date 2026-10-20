@@ -50,7 +50,7 @@ async function main() {
         status: TenantStatus.ACTIVE,
         isVerified: true,
         verifiedAt: new Date(),
-        trialEndsAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        trialEndsAt: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
         subscriptionEndsAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
       },
     });
